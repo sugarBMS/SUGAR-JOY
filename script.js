@@ -2,6 +2,7 @@ $(document).ready(function() {
   $.getJSON('header.json', function(header) {
     document.title = header.title;
     $('h1').text(header.title);
+    $('p.description').text(header.description); // descriptionを反映
     $.getJSON(header.spreadsheet_url, function(data) {
       $('#bmsTable').DataTable({
         data: data,
