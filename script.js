@@ -9,14 +9,16 @@ $(document).ready(function() {
         columns: header.columns.map(col => ({
           title: col.name,
           data: col.key,
-          render: col.render === 'link' ? function(data) {
+          render: col.key === 'Level' ? function(data) {
+            return 'SU' + (data || ''); // Level列に"SU"を付加
+          } : col.render === 'link' ? function(data) {
             return data ? `<a href="${data}" target="_blank">DL</a>` : '';
           } : null
         })),
         language: { url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/ja.json' },
-        paging: false, // ページネーションを無効化
+        paging: false, // ページネーション無効
         order: [[0, 'asc']], // Levelで初期ソート
-        searching: true // 検索機能は維持
+        searching: true // 検索機能維持
       });
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error('スプレッドシートデータ取得エラー:', textStatus, errorThrown);
