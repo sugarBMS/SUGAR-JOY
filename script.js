@@ -2,7 +2,7 @@ $(document).ready(function() {
   $.getJSON('header.json', function(header) {
     document.title = header.title;
     $('h1').text(header.title);
-    $('p.description').text(header.description); // descriptionを反映
+    $('p.description').html(header.description.replace(/\n/g, '<br>')); // 改行を<br>に変換
     $.getJSON(header.spreadsheet_url, function(data) {
       $('#bmsTable').DataTable({
         data: data,
@@ -14,10 +14,9 @@ $(document).ready(function() {
           } : null
         })),
         language: { url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/ja.json' },
-        pageLength: 25,
+        paging: false, // ページネーションを無効化
         order: [[0, 'asc']], // Levelで初期ソート
-        searching: true,
-        paging: true
+        searching: true // 検索機能は維持
       });
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error('スプレッドシートデータ取得エラー:', textStatus, errorThrown);
