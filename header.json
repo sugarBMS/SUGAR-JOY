@@ -1,6 +1,6 @@
 {
   "title": "SUGARJOY BMS難易度表",
-  "description": "SUGARJOYのBMS難易度表です。\nSU-3＝sl0～4  SU-2=sl5～8  SU-1＝sl9～12  SU0以降はst0基準",
+  "description": "SUGARJOYのBMS難易度表です。\nSU-3＝sl0～4  SU-2=sl5～8  SU-1＝sl9～12  SU0以降はst0基準  SU99は査定不可能or糞譜面",
   "columns": [
     {"name": "Level", "key": "Level"},
     {"name": "Title", "key": "Title"},
