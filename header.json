@@ -1,12 +1,14 @@
 {
-  "title": "SUGARJOY",
-  "description": "SUGARJOY",
+  "title": "SUGARJOY BMS難易度表",
+  "description": "SUGARJOYのBMS難易度表です。",
   "columns": [
-    {"name": "Level", "key": "level"},
-    {"name": "Title", "key": "title"},
-    {"name": "Artist", "key": "artist"},
-    {"name": "DL", "key": "dl", "render": "link"},
-    {"name": "Comment", "key": "comment"}
+    {"name": "Level", "key": "Level"},
+    {"name": "Title", "key": "Title"},
+    {"name": "Artist", "key": "Artist"},
+    {"name": "NOTES", "key": "NOTES"},
+    {"name": "DL", "key": "DL", "render": "link"},
+    {"name": "糞譜面度", "key": "糞譜面度"},
+    {"name": "Comment", "key": "Comment"}
   ],
   "spreadsheet_url": "https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec"
 }
