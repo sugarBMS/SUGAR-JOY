@@ -32,20 +32,23 @@
       max-width: 1400px; /* 表の幅 */
       margin: 0 auto;
     }
-    table {
-      width: 100%;
+    table.dataTable {
+      width: 100% !important;
       border-collapse: collapse;
       background-color: #f5f5f5 !important; /* 表：薄い灰色 */
     }
-    th, td {
+    table.dataTable th, table.dataTable td {
       padding: 10px;
       text-align: left;
-      border: 1px solid #ddd;
+      border: 1px solid #ccc !important; /* 枠線を少し濃く */
       background-color: #f5f5f5 !important; /* セル：薄い灰色 */
     }
-    th {
-      background-color: #007bff !important; /* ヘッダー：青 */
-      color: white;
+    table.dataTable th {
+      background-color: #000000 !important; /* ヘッダー：黒 */
+      color: #ffffff !important; /* ヘッダー文字：白 */
+    }
+    table.dataTable tr:hover {
+      background-color: #e0e0e0 !important; /* ホバー：濃い灰色 */
     }
     a {
       color: #007bff;
@@ -54,10 +57,7 @@
     a:hover {
       text-decoration: underline;
     }
-    tr:hover {
-      background-color: #e0e0e0 !important; /* ホバー：濃い灰色 */
-    }
-    th:nth-child(1), td:nth-child(1) { width: 7%; } /* Level */
+    th:nth-child(1), td:nth-child(1) { width: 7%; background-color: #f5f5f5 !important; } /* Level */
     th:nth-child(2), td:nth-child(2) { width: 20%; } /* Title */
     th:nth-child(3), td:nth-child(3) { width: 15%; } /* Artist */
     th:nth-child(4), td:nth-child(4) { width: 7%; } /* NOTES */
@@ -67,7 +67,7 @@
     th:nth-child(8), td:nth-child(8) { width: 7%; white-space: nowrap; } /* 糞譜面度 */
     th:nth-child(9), td:nth-child(9) { width: 20%; } /* Comment */
     @media (max-width: 600px) {
-      th, td {
+      table.dataTable th, table.dataTable td {
         font-size: 14px;
         padding: 5px;
       }
@@ -82,9 +82,6 @@
     <h1>SUGARJOY BMS難易度表</h1>
     <p class="description"></p>
     <table id="bmsTable" class="display table table-bordered"></table>
-  </div>
-</body>
-</html>
   </div>
 </body>
 </html>
