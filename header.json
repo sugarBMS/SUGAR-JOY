@@ -1,11 +1,13 @@
 {
   "title": "SUGARJOY BMS難易度表",
-  "description": "SU-3 = sl0～4　SU-2 = sl5～8　SU-1 = sl9-12　SU0からst基準\n糞譜面度0＝stella譜面  1=発狂BMS  2=第二発狂  3=引退",
+  "description": "SUGARJOYのBMS難易度表です。\nBMSのクリア状況やコメントを管理します。",
   "columns": [
     {"name": "Level", "key": "Level"},
     {"name": "Title", "key": "Title"},
     {"name": "Artist", "key": "Artist"},
     {"name": "NOTES", "key": "NOTES"},
+    {"name": "T/N", "key": "T/N"},
+    {"name": "BPM", "key": "BPM"},
     {"name": "DL", "key": "DL", "render": "link"},
     {"name": "糞譜面度", "key": "糞譜面度"},
     {"name": "Comment", "key": "Comment"}
