@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SUGAR.JOY BMS難易度表</title>
+  <title>SUGARJOY BMS難易度表</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -12,7 +12,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #ffffff;
+      background-color: #ffffff !important; /* 表外：白色 */
       margin: 0;
       padding: 20px;
     }
@@ -29,22 +29,22 @@
       white-space: pre-wrap; /* 改行を反映 */
     }
     .container {
-      max-width: 1400px;
+      max-width: 1400px; /* 表の幅 */
       margin: 0 auto;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #f5f5f5;
+      background-color: #f5f5f5 !important; /* 表：薄い灰色 */
     }
     th, td {
       padding: 10px;
       text-align: left;
       border: 1px solid #ddd;
-      background-color: #f5f5f5;
+      background-color: #f5f5f5 !important; /* セル：薄い灰色 */
     }
     th {
-      background-color: #007bff;
+      background-color: #007bff !important; /* ヘッダー：青 */
       color: white;
     }
     a {
@@ -55,21 +55,24 @@
       text-decoration: underline;
     }
     tr:hover {
-      background-color: #e0e0e0;
+      background-color: #e0e0e0 !important; /* ホバー：濃い灰色 */
     }
-    th:nth-child(1), td:nth-child(1) { width: 8%; } /* Level */
-    th:nth-child(2), td:nth-child(2) { width: 22%; } /* Title */
-    th:nth-child(3), td:nth-child(3) { width: 17%; } /* Artist */
-    th:nth-child(4), td:nth-child(4) { width: 8%; } /* NOTES */
-    th:nth-child(5), td:nth-child(5) { width: 8%; } /* T/N */
-    th:nth-child(6), td:nth-child(6) { width: 8%; } /* BPM */
-    th:nth-child(7), td:nth-child(7) { width: 8%; } /* DL */
-    th:nth-child(8), td:nth-child(8) { width: 8%; white-space: nowrap; } /* 糞譜面度 */
+    th:nth-child(1), td:nth-child(1) { width: 7%; } /* Level */
+    th:nth-child(2), td:nth-child(2) { width: 20%; } /* Title */
+    th:nth-child(3), td:nth-child(3) { width: 15%; } /* Artist */
+    th:nth-child(4), td:nth-child(4) { width: 7%; } /* NOTES */
+    th:nth-child(5), td:nth-child(5) { width: 7%; } /* T/N */
+    th:nth-child(6), td:nth-child(6) { width: 7%; } /* BPM */
+    th:nth-child(7), td:nth-child(7) { width: 7%; } /* DL */
+    th:nth-child(8), td:nth-child(8) { width: 7%; white-space: nowrap; } /* 糞譜面度 */
     th:nth-child(9), td:nth-child(9) { width: 20%; } /* Comment */
     @media (max-width: 600px) {
       th, td {
         font-size: 14px;
         padding: 5px;
+      }
+      .container {
+        max-width: 100%; /* モバイルで全幅 */
       }
     }
   </style>
@@ -79,6 +82,9 @@
     <h1>SUGARJOY BMS難易度表</h1>
     <p class="description"></p>
     <table id="bmsTable" class="display table table-bordered"></table>
+  </div>
+</body>
+</html>
   </div>
 </body>
 </html>
