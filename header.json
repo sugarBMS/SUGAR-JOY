@@ -1,5 +1,12 @@
 {
-"name" : "SUGARJOY",
-"symbol" : "SU",
-"data_url" : "https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec"
+  "title": "SUGARJOY",
+  "description": "SUGARJOY",
+  "columns": [
+    {"name": "Level", "key": "level"},
+    {"name": "Title", "key": "title"},
+    {"name": "Artist", "key": "artist"},
+    {"name": "DL", "key": "dl", "render": "link"},
+    {"name": "Comment", "key": "comment"}
+  ],
+  "spreadsheet_url": "https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec"
 }
