@@ -6,20 +6,22 @@ $(document).ready(function() {
     return match ? parseInt(match[0], 10) : 9999;
   };
 
-  // 重複楽曲を統合する関数
+  // 重複楽曲を統合する関数（Group優先、フォールバックでベースタイトル）
   function mergeDuplicates(data) {
-    const grouped = {};
+    const grouped = new Map();
     data.forEach(row => {
-      const title = row.Title || '';
-      if (!grouped[title]) {
-        grouped[title] = [];
+      // Group列を優先、なければベースタイトル
+      let key = row.Group && typeof row.Group === 'string' && row.Group.trim()
+        ? row.Group.trim().toLowerCase()
+        : (row.Title || 'Unknown').replace(/\s*\[.*\]\s*/, '').trim().toLowerCase();
+      if (!grouped.has(key)) {
+        grouped.set(key, []);
       }
-      grouped[title].push(row);
+      grouped.get(key).push(row);
     });
 
     const merged = [];
-    Object.keys(grouped).forEach(title => {
-      const rows = grouped[title];
+    grouped.forEach(rows => {
       if (rows.length === 1) {
         merged.push(rows[0]);
       } else {
@@ -29,13 +31,13 @@ $(document).ready(function() {
           const bLevel = (b.Level || '').replace(/^SU/, '').replace(/[★☆]/g, '').match(/-?\d+/)?.[0] || 0;
           return parseInt(bLevel) - parseInt(aLevel); // 降順
         });
-        merged.push(sorted[0]); // 最高Levelの行を選択
+        merged.push(sorted[0]);
       }
     });
     return merged;
   }
 
-  let allData = []; // 全データ
+  let allData = [];
   let table;
 
   $.getJSON('header.json', function(header) {
@@ -44,9 +46,8 @@ $(document).ready(function() {
     $('p.description').html(header.description.replace(/\n/g, '<br>'));
 
     $.getJSON(header.spreadsheet_url, function(data) {
-      allData = data; // 全データを保存
+      allData = data;
 
-      // 初期表示（全データ）
       table = $('#bmsTable').DataTable({
         data: allData,
         columns: header.columns.map(col => ({
@@ -57,15 +58,16 @@ $(document).ready(function() {
           } : col.render === 'link' ? function(data) {
             return data ? `<a href="${data}" target="_blank">DL</a>` : '';
           } : null,
-          type: col.key === 'Level' ? 'level' : null
+          type: col.key === 'Level' ? 'level' : null,
+          visible: col.visible !== false // Group列を非表示
         })),
         language: { url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/ja.json' },
         paging: false,
         order: [[0, 'asc']],
-        searching: true
+        searching: true,
+        deferRender: true
       });
 
-      // チェックボックスのイベント
       $('#mergeDuplicates').on('change', function() {
         const isMerged = $(this).is(':checked');
         table.clear();
