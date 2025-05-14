@@ -13,7 +13,7 @@
   <style>
     body {
       font-family: 'Roboto', Arial, sans-serif;
-      background-color: #ffffff !important; /* 表外：白色 */
+      background-color: #ffffff !important;
       margin: 0;
       padding: 20px;
     }
@@ -31,35 +31,44 @@
       white-space: pre-wrap;
     }
     .container {
-      max-width: 90vw; /* 画面幅の90% */
+      max-width: 90vw;
       margin: 0 auto;
+    }
+    .controls {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .controls label {
+      font-size: 1em;
+      color: #333;
+      margin-left: 5px;
     }
     table.dataTable {
       width: 100% !important;
       border-collapse: collapse;
-      background-color: #f5f5f5 !important; /* 表：薄い灰色 */
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 微妙な影 */
-      max-height: 600px; /* スクロール対応 */
+      background-color: #f5f5f5 !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-height: 600px;
       overflow-y: auto;
     }
     table.dataTable th, table.dataTable td {
-      padding: 12px; /* パディング増加 */
+      padding: 12px;
       text-align: left;
-      border: 1px solid #bbb !important; /* 枠線を濃く */
+      border: 1px solid #bbb !important;
       background-color: #f5f5f5 !important;
-      line-height: 1.4; /* 行間 */
+      line-height: 1.4;
     }
     table.dataTable th {
-      background-color: #000000 !important; /* ヘッダー：黒 */
+      background-color: #000000 !important;
       color: #ffffff !important;
-      position: sticky; /* ヘッダー固定 */
+      position: sticky;
       top: 0;
       z-index: 10;
       font-weight: 500;
     }
     table.dataTable tr:hover {
       background-color: #e0e0e0 !important;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* ホバー時の影 */
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
     a {
       color: #007bff;
@@ -68,33 +77,31 @@
     a:hover {
       text-decoration: underline;
     }
-    /* Level列の"SU"強調 */
     table.dataTable td:nth-child(1) {
       font-weight: 500;
-      color: #d81b60; /* ピンクで強調 */
+      color: #d81b60;
     }
-    /* 糞譜面度の色分け */
     table.dataTable td:nth-child(8) {
       background-color: #f5f5f5 !important;
     }
     table.dataTable td:nth-child(8):contains('高') {
-      background-color: #ffcccc !important; /* 赤 */
+      background-color: #ffcccc !important;
     }
     table.dataTable td:nth-child(8):contains('中') {
-      background-color: #fff3cd !important; /* 黄 */
+      background-color: #fff3cd !important;
     }
     table.dataTable td:nth-child(8):contains('低') {
-      background-color: #d4edda !important; /* 緑 */
+      background-color: #d4edda !important;
     }
-    th:nth-child(1), td:nth-child(1) { width: 8%; } /* Level */
-    th:nth-child(2), td:nth-child(2) { width: 20%; } /* Title */
-    th:nth-child(3), td:nth-child(3) { width: 15%; } /* Artist */
-    th:nth-child(4), td:nth-child(4) { width: 7%; } /* NOTES */
-    th:nth-child(5), td:nth-child(5) { width: 7%; } /* T/N */
-    th:nth-child(6), td:nth-child(6) { width: 7%; } /* BPM */
-    th:nth-child(7), td:nth-child(7) { width: 7%; } /* DL */
-    th:nth-child(8), td:nth-child(8) { width: 7%; white-space: nowrap; } /* 糞譜面度 */
-    th:nth-child(9), td:nth-child(9) { width: 22%; white-space: normal; } /* Comment */
+    th:nth-child(1), td:nth-child(1) { width: 8%; }
+    th:nth-child(2), td:nth-child(2) { width: 20%; }
+    th:nth-child(3), td:nth-child(3) { width: 15%; }
+    th:nth-child(4), td:nth-child(4) { width: 7%; }
+    th:nth-child(5), td:nth-child(5) { width: 7%; }
+    th:nth-child(6), td:nth-child(6) { width: 7%; }
+    th:nth-child(7), td:nth-child(7) { width: 7%; }
+    th:nth-child(8), td:nth-child(8) { width: 7%; white-space: nowrap; }
+    th:nth-child(9), td:nth-child(9) { width: 22%; white-space: normal; }
     @media (max-width: 768px) {
       table.dataTable th, table.dataTable td {
         font-size: 14px;
@@ -117,10 +124,13 @@
   <div class="container">
     <h1>SUGARJOY BMS難易度表</h1>
     <p class="description"></p>
+    <div class="controls">
+      <input type="checkbox" id="mergeDuplicates">
+      <label for="mergeDuplicates">重複楽曲を統合</label>
+    </div>
     <table id="bmsTable" class="display table table-bordered"></table>
   </div>
   <script>
-    // jQuery :contains セレクタの拡張
     jQuery.expr[':'].contains = jQuery.expr.createPseudo(function(arg) {
       return function(elem) {
         return jQuery(elem).text().indexOf(arg) >= 0;
