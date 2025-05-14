@@ -1,34 +1,76 @@
 $(document).ready(function() {
-  // カスタムソートプラグイン: Level列の数値部分を抽出してソート
+  // Level列のカスタムソート
   $.fn.dataTable.ext.type.order['level-pre'] = function(data) {
-    // "SU"を除去し、数値部分を抽出
-    var value = data.replace(/^SU/, ''); // "SU"を削除
-    // 記号（例：★）や非数値文字を除去し、数値を抽出
-    var match = value.match(/-?\d+/); // 負数を含む数値を抽出
-    return match ? parseInt(match[0], 10) : 0; // 数値に変換（ない場合は0）
+    var value = data.replace(/^SU/, '').replace(/[★☆]/g, '');
+    var match = value.match(/-?\d+/);
+    return match ? parseInt(match[0], 10) : 9999;
   };
+
+  // 重複楽曲を統合する関数
+  function mergeDuplicates(data) {
+    const grouped = {};
+    data.forEach(row => {
+      const title = row.Title || '';
+      if (!grouped[title]) {
+        grouped[title] = [];
+      }
+      grouped[title].push(row);
+    });
+
+    const merged = [];
+    Object.keys(grouped).forEach(title => {
+      const rows = grouped[title];
+      if (rows.length === 1) {
+        merged.push(rows[0]);
+      } else {
+        // 最高Levelを選択
+        const sorted = rows.sort((a, b) => {
+          const aLevel = (a.Level || '').replace(/^SU/, '').replace(/[★☆]/g, '').match(/-?\d+/)?.[0] || 0;
+          const bLevel = (b.Level || '').replace(/^SU/, '').replace(/[★☆]/g, '').match(/-?\d+/)?.[0] || 0;
+          return parseInt(bLevel) - parseInt(aLevel); // 降順
+        });
+        merged.push(sorted[0]); // 最高Levelの行を選択
+      }
+    });
+    return merged;
+  }
+
+  let allData = []; // 全データ
+  let table;
 
   $.getJSON('header.json', function(header) {
     document.title = header.title;
     $('h1').text(header.title);
-    $('p.description').html(header.description.replace(/\n/g, '<br>')); // 改行を<br>に変換
+    $('p.description').html(header.description.replace(/\n/g, '<br>'));
+
     $.getJSON(header.spreadsheet_url, function(data) {
-      $('#bmsTable').DataTable({
-        data: data,
+      allData = data; // 全データを保存
+
+      // 初期表示（全データ）
+      table = $('#bmsTable').DataTable({
+        data: allData,
         columns: header.columns.map(col => ({
           title: col.name,
           data: col.key,
           render: col.key === 'Level' ? function(data) {
-            return 'SU' + (data || ''); // 表示時に"SU"を付加
+            return 'SU' + (data || '');
           } : col.render === 'link' ? function(data) {
             return data ? `<a href="${data}" target="_blank">DL</a>` : '';
           } : null,
-          type: col.key === 'Level' ? 'level' : null // Level列にカスタムソートを適用
+          type: col.key === 'Level' ? 'level' : null
         })),
         language: { url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/ja.json' },
-        paging: false, // ページネーション無効
-        order: [[0, 'asc']], // Levelで初期ソート（昇順）
-        searching: true // 検索機能維持
+        paging: false,
+        order: [[0, 'asc']],
+        searching: true
+      });
+
+      // チェックボックスのイベント
+      $('#mergeDuplicates').on('change', function() {
+        const isMerged = $(this).is(':checked');
+        table.clear();
+        table.rows.add(isMerged ? mergeDuplicates(allData) : allData);
+        table.draw();
       });
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error('スプレッドシートデータ取得エラー:', textStatus, errorThrown);
