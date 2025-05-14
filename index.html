@@ -6,12 +6,13 @@
   <title>SUGARJOY BMS難易度表</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <script src="script.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto', Arial, sans-serif;
       background-color: #ffffff !important; /* 表外：白色 */
       margin: 0;
       padding: 20px;
@@ -20,35 +21,45 @@
       text-align: center;
       color: #333;
       margin-bottom: 10px;
+      font-weight: 500;
     }
     p.description {
       text-align: center;
       color: #555;
       font-size: 1.1em;
       margin-bottom: 20px;
-      white-space: pre-wrap; /* 改行を反映 */
+      white-space: pre-wrap;
     }
     .container {
-      max-width: 1400px; /* 表の幅 */
+      max-width: 90vw; /* 画面幅の90% */
       margin: 0 auto;
     }
     table.dataTable {
       width: 100% !important;
       border-collapse: collapse;
       background-color: #f5f5f5 !important; /* 表：薄い灰色 */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 微妙な影 */
+      max-height: 600px; /* スクロール対応 */
+      overflow-y: auto;
     }
     table.dataTable th, table.dataTable td {
-      padding: 10px;
+      padding: 12px; /* パディング増加 */
       text-align: left;
-      border: 1px solid #ccc !important; /* 枠線を少し濃く */
-      background-color: #f5f5f5 !important; /* セル：薄い灰色 */
+      border: 1px solid #bbb !important; /* 枠線を濃く */
+      background-color: #f5f5f5 !important;
+      line-height: 1.4; /* 行間 */
     }
     table.dataTable th {
       background-color: #000000 !important; /* ヘッダー：黒 */
-      color: #ffffff !important; /* ヘッダー文字：白 */
+      color: #ffffff !important;
+      position: sticky; /* ヘッダー固定 */
+      top: 0;
+      z-index: 10;
+      font-weight: 500;
     }
     table.dataTable tr:hover {
-      background-color: #e0e0e0 !important; /* ホバー：濃い灰色 */
+      background-color: #e0e0e0 !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* ホバー時の影 */
     }
     a {
       color: #007bff;
@@ -57,7 +68,25 @@
     a:hover {
       text-decoration: underline;
     }
-    th:nth-child(1), td:nth-child(1) { width: 7%; background-color: #f5f5f5 !important; } /* Level */
+    /* Level列の"SU"強調 */
+    table.dataTable td:nth-child(1) {
+      font-weight: 500;
+      color: #d81b60; /* ピンクで強調 */
+    }
+    /* 糞譜面度の色分け */
+    table.dataTable td:nth-child(8) {
+      background-color: #f5f5f5 !important;
+    }
+    table.dataTable td:nth-child(8):contains('高') {
+      background-color: #ffcccc !important; /* 赤 */
+    }
+    table.dataTable td:nth-child(8):contains('中') {
+      background-color: #fff3cd !important; /* 黄 */
+    }
+    table.dataTable td:nth-child(8):contains('低') {
+      background-color: #d4edda !important; /* 緑 */
+    }
+    th:nth-child(1), td:nth-child(1) { width: 8%; } /* Level */
     th:nth-child(2), td:nth-child(2) { width: 20%; } /* Title */
     th:nth-child(3), td:nth-child(3) { width: 15%; } /* Artist */
     th:nth-child(4), td:nth-child(4) { width: 7%; } /* NOTES */
@@ -65,14 +94,21 @@
     th:nth-child(6), td:nth-child(6) { width: 7%; } /* BPM */
     th:nth-child(7), td:nth-child(7) { width: 7%; } /* DL */
     th:nth-child(8), td:nth-child(8) { width: 7%; white-space: nowrap; } /* 糞譜面度 */
-    th:nth-child(9), td:nth-child(9) { width: 20%; } /* Comment */
-    @media (max-width: 600px) {
+    th:nth-child(9), td:nth-child(9) { width: 22%; white-space: normal; } /* Comment */
+    @media (max-width: 768px) {
       table.dataTable th, table.dataTable td {
         font-size: 14px;
-        padding: 5px;
+        padding: 8px;
       }
       .container {
-        max-width: 100%; /* モバイルで全幅 */
+        max-width: 100%;
+        padding: 0 10px;
+      }
+    }
+    @media (max-width: 480px) {
+      table.dataTable th, table.dataTable td {
+        font-size: 12px;
+        padding: 6px;
       }
     }
   </style>
@@ -83,5 +119,13 @@
     <p class="description"></p>
     <table id="bmsTable" class="display table table-bordered"></table>
   </div>
+  <script>
+    // jQuery :contains セレクタの拡張
+    jQuery.expr[':'].contains = jQuery.expr.createPseudo(function(arg) {
+      return function(elem) {
+        return jQuery(elem).text().indexOf(arg) >= 0;
+      };
+    });
+  </script>
 </body>
 </html>
