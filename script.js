@@ -6,11 +6,10 @@ $(document).ready(function() {
     return match ? parseInt(match[0], 10) : 9999;
   };
 
-  // 重複楽曲を統合する関数（Group優先、フォールバックでベースタイトル）
+  // 重複楽曲を統合する関数（Group優先、SU99を除く最高Level）
   function mergeDuplicates(data) {
     const grouped = new Map();
     data.forEach(row => {
-      // Group列を優先、なければベースタイトル
       let key = row.Group && typeof row.Group === 'string' && row.Group.trim()
         ? row.Group.trim().toLowerCase()
         : (row.Title || 'Unknown').replace(/\s*\[.*\]\s*/, '').trim().toLowerCase();
@@ -25,8 +24,13 @@ $(document).ready(function() {
       if (rows.length === 1) {
         merged.push(rows[0]);
       } else {
-        // 最高Levelを選択
-        const sorted = rows.sort((a, b) => {
+        // SU99を除外し、最高Levelを選択
+        const filtered = rows.filter(row => {
+          const level = (row.Level || '').replace(/^SU/, '').replace(/[★☆]/g, '');
+          return level !== '99';
+        });
+        const targetRows = filtered.length > 0 ? filtered : rows; // SU99しかない場合
+        const sorted = targetRows.sort((a, b) => {
           const aLevel = (a.Level || '').replace(/^SU/, '').replace(/[★☆]/g, '').match(/-?\d+/)?.[0] || 0;
           const bLevel = (b.Level || '').replace(/^SU/, '').replace(/[★☆]/g, '').match(/-?\d+/)?.[0] || 0;
           return parseInt(bLevel) - parseInt(aLevel); // 降順
@@ -59,7 +63,7 @@ $(document).ready(function() {
             return data ? `<a href="${data}" target="_blank">DL</a>` : '';
           } : null,
           type: col.key === 'Level' ? 'level' : null,
-          visible: col.visible !== false // Group列を非表示
+          visible: col.visible !== false
         })),
         language: { url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/ja.json' },
         paging: false,
