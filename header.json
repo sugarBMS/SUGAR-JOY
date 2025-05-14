@@ -1,16 +1,17 @@
 {
-  "title": "SUGAR.JOY BMS難易度表",
-  "description": "SU-3＝sl0～4  SU-2=sl5～8  SU-1＝sl9～12  SU0以降はst0基準  SU99は査定不可能or糞譜面\n0.18を下回る低TOTAL or obj名非搭載は作成初期の譜面でズレチェック行ってない可能性大",
+  "title": "SUGARJOY BMS難易度表",
+  "description": "SUGARJOYのBMS難易度表です。\nデータは随時更新されます。",
+  "spreadsheet_url": "https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec",
   "columns": [
-    {"name": "Level", "key": "Level"},
-    {"name": "Title", "key": "Title"},
-    {"name": "Artist", "key": "Artist"},
-    {"name": "NOTES", "key": "NOTES"},
-    {"name": "T/N", "key": "T/N"},
-    {"name": "BPM", "key": "BPM"},
-    {"name": "DL", "key": "DL", "render": "link"},
-    {"name": "糞譜面度", "key": "糞譜面度"},
-    {"name": "Comment", "key": "Comment"}
-  ],
-  "spreadsheet_url": "https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec"
+    { "name": "Level", "key": "Level", "render": null },
+    { "name": "Title", "key": "Title", "render": null },
+    { "name": "Artist", "key": "Artist", "render": null },
+    { "name": "NOTES", "key": "NOTES", "render": null },
+    { "name": "T/N", "key": "T/N", "render": null },
+    { "name": "BPM", "key": "BPM", "render": null },
+    { "name": "DL", "key": "DL", "render": "link" },
+    { "name": "糞譜面度", "key": "糞譜面度", "render": null },
+    { "name": "Comment", "key": "Comment", "render": null },
+    { "name": "Group", "key": "Group", "render": null, "visible": false }
+  ]
 }
