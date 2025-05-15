@@ -17,10 +17,11 @@ $(document).ready(function() {
 
     // LevelをSU形式にフォーマット
     function formatLevel(level) {
+        if (level === 0 || level === '0') return 'SU0'; // 0を明示的に処理
         if (typeof level === 'number' || !isNaN(parseInt(level))) {
             return `SU${level}`;
         }
-        return level;
+        return level || '';
     }
 
     // 文字列を正規化（空白トリム、改行削除）
@@ -34,22 +35,34 @@ $(document).ready(function() {
     }
 
     // URLs（デプロイ後に更新）
-    const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbwdp3s0KqXpSuXlmmEACvYYLwusoGcB4u0AFV8VhQWz8jEeIFbuo83itubepYlG5qyr/exec'; // Sheet1用
-    const getExternalTitlesUrl = 'https://script.google.com/macros/s/AKfycbwieOCUBBfpXW6sH04sMawbF_3lDX-VbBumQ42vRv-meIuiRHDEJTL5CCsTfH1cn4Uo/exec'; // ExternalTitles用
+    const spreadsheetUrl = 'https://script.google.com/macros/s/[Sheet1デプロイID]/exec';
+    const getExternalTitlesUrl = 'https://script.google.com/macros/s/[ExternalTitlesデプロイID]/exec';
+    const headerUrl = './header.json'; // GitHubリポジトリのルート
 
-    // データ取得（Sheet1とExternalTitlesを並列）
+    // データ取得（Sheet1、ExternalTitles、header.jsonを並列）
     Promise.all([
         $.getJSON(spreadsheetUrl).promise(),
-        $.getJSON(getExternalTitlesUrl).promise()
-    ]).then(([sheet1Data, externalTitlesData]) => {
+        $.getJSON(getExternalTitlesUrl).promise(),
+        $.getJSON(headerUrl).promise()
+    ]).then(([sheet1Data, externalTitlesData, headerData]) => {
         tableData = sheet1Data || [];
         externalTitles = (externalTitlesData || []).map(normalizeString);
         console.log('Sheet1 data loaded:', tableData);
         console.log('External titles loaded:', externalTitles);
+        
+        // header.jsonのdescriptionを表示
+        if (headerData && headerData.description) {
+            $('#description').text(headerData.description);
+        } else {
+            $('#description').text('Description not available');
+            console.warn('header.json missing or no description:', headerData);
+        }
+        
         renderTable();
     }).catch(error => {
         console.error('Failed to fetch data:', error);
         $('#table-body').html('<tr><td colspan="9">データの取得に失敗しました</td></tr>');
+        $('#description').text('Failed to load description');
     });
 
     // テーブルを描画
@@ -110,7 +123,7 @@ $(document).ready(function() {
             const row = $('<tr></tr>');
 
             // Level（SUを付加）
-            row.append($('<td></td>').text(formatLevel(item.Level) || ''));
+            row.append($('<td></td>').text(formatLevel(item.Level)));
 
             // Title（外部タイトルなら青）
             const titleCell = $('<td></td>').text(item.Title || '');
@@ -138,8 +151,8 @@ $(document).ready(function() {
             }
             row.append(dlCell);
 
-            // 糞譜面度（数値）
-            row.append($('<td></td>').text(item['糞譜面度'] || ''));
+            // 糞譜面度（0を明示的に処理）
+            row.append($('<td></td>').text(item['糞譜面度'] === 0 ? '0' : (item['糞譜面度'] || '')));
 
             // Comment
             row.append($('<td></td>').text(item.Comment || ''));
@@ -178,5 +191,9 @@ $(document).ready(function() {
     $('th').css({
         'background-color': '#4CAF50',
         'color': 'white'
+    });
+    $('#description').css({
+        'margin': '10px 0',
+        'font-style': 'italic'
     });
 });
