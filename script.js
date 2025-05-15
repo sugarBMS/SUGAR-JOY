@@ -1,11 +1,20 @@
 // SUGARJOY BMS Difficulty Table
 $(document).ready(function() {
     let externalTitles = [];
+    let tableData = [];
+    let sortDirection = 'desc'; // 初期：降順（SU0→SU-3）
+    let unifyDuplicates = false; // 初期：重複統一オフ
 
-    // getTitlesJsonのURL
+    // Levelの優先順位
+    const levelPriority = {
+        'SU0': 3,
+        'SU-1': 2,
+        'SU-2': 1,
+        'SU-3': 0
+    };
+
+    // URLs
     const getTitlesUrl = 'https://script.google.com/macros/s/AKfycbyzaHHi9CRsJDSpIhUOLRxOp6HbR4ADruSt_wM5j_VJZVQ0btKU1zlDVXCwazVdKLQ/exec';
-
-    // spreadsheet_url（doGet）
     const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec';
 
     // ExternalTitlesデータを取得
@@ -23,7 +32,8 @@ $(document).ready(function() {
     function loadTableData() {
         $.getJSON(spreadsheetUrl, function(data) {
             console.log('Table data:', data);
-            renderTable(data);
+            tableData = data;
+            renderTable();
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error('Failed to fetch table data:', textStatus, errorThrown);
             $('#table-body').html('<tr><td colspan="9">データの取得に失敗しました</td></tr>');
@@ -31,69 +41,107 @@ $(document).ready(function() {
     }
 
     // テーブルを描画
-    function renderTable(data) {
+    function renderTable() {
         const tableBody = $('#table-body');
         tableBody.empty();
 
-        // Group統合（SU99除外）
-        const groupedData = {};
-        data.forEach(item => {
-            if (item.Group && item.Group !== 'SU99') {
-                if (!groupedData[item.Group]) {
-                    groupedData[item.Group] = [];
+        let displayData = [...tableData];
+
+        // 重複楽曲の統一（チェックボックスがオンの場合）
+        if (unifyDuplicates) {
+            const groupedData = {};
+            tableData.forEach(item => {
+                if (item.Group && item.Group !== 'SU99') {
+                    if (!groupedData[item.Title]) {
+                        groupedData[item.Title] = [];
+                    }
+                    groupedData[item.Title].push(item);
+                } else if (!item.Group || item.Group === '') {
+                    groupedData[item.Title] = [item];
                 }
-                groupedData[item.Group].push(item);
-            } else if (!item.Group || item.Group === '') {
-                groupedData[item.Title] = [item];
-            }
+            });
+
+            displayData = [];
+            Object.keys(groupedData).forEach(title => {
+                const items = groupedData[title];
+                if (items.length === 1) {
+                    displayData.push(items[0]);
+                } else {
+                    // 最高Levelを選択
+                    const highestItem = items.reduce((max, item) => {
+                        const currentPriority = levelPriority[item.Level] || -1;
+                        const maxPriority = levelPriority[max.Level] || -1;
+                        return currentPriority > maxPriority ? item : max;
+                    }, items[0]);
+                    displayData.push(highestItem);
+                }
+            });
+        }
+
+        // Levelでソート
+        displayData.sort((a, b) => {
+            const priorityA = levelPriority[a.Level] || -1;
+            const priorityB = levelPriority[b.Level] || -1;
+            return sortDirection === 'desc' ? priorityB - priorityA : priorityA - priorityB;
         });
 
         // テーブル行を生成
-        Object.keys(groupedData).sort().forEach(group => {
-            const items = groupedData[group];
-            items.forEach(item => {
-                const isExternal = externalTitles.includes(item.Title);
-                const row = $('<tr></tr>');
+        displayData.forEach(item => {
+            const isExternal = externalTitles.includes(item.Title);
+            const row = $('<tr></tr>');
 
-                // Level
-                row.append($('<td></td>').text(item.Level || ''));
+            // Level
+            row.append($('<td></td>').text(item.Level || ''));
 
-                // Title（外部タイトルなら青）
-                const titleCell = $('<td></td>').text(item.Title || '');
-                if (isExternal) {
-                    titleCell.css('color', '#0000FF');
-                }
-                row.append(titleCell);
+            // Title（外部タイトルなら青）
+            const titleCell = $('<td></td>').text(item.Title || '');
+            if (isExternal) {
+                titleCell.css('color', '#0000FF');
+            }
+            row.append(titleCell);
 
-                // Artist
-                row.append($('<td></td>').text(item.Artist || ''));
+            // Artist
+            row.append($('<td></td>').text(item.Artist || ''));
 
-                // NOTES
-                row.append($('<td></td>').text(item.NOTES || ''));
+            // NOTES
+            row.append($('<td></td>').text(item.NOTES || ''));
 
-                // T/N
-                row.append($('<td></td>').text(item['T/N'] || ''));
+            // T/N
+            row.append($('<td></td>').text(item['T/N'] || ''));
 
-                // BPM
-                row.append($('<td></td>').text(item.BPM || ''));
+            // BPM
+            row.append($('<td></td>').text(item.BPM || ''));
 
-                // DL（リンク）
-                const dlCell = $('<td></td>');
-                if (item.DL) {
-                    dlCell.append($('<a></a>').attr('href', item.DL).text('Download').attr('target', '_blank'));
-                }
-                row.append(dlCell);
+            // DL（リンク）
+            const dlCell = $('<td></td>');
+            if (item.DL) {
+                dlCell.append($('<a></a>').attr('href', item.DL).text('Download').attr('target', '_blank'));
+            }
+            row.append(dlCell);
 
-                // 糞譜面度（数値）
-                row.append($('<td></td>').text(item['糞譜面度'] || ''));
+            // 糞譜面度（数値）
+            row.append($('<td></td>').text(item['糞譜面度'] || ''));
 
-                // Comment
-                row.append($('<td></td>').text(item.Comment || ''));
+            // Comment
+            row.append($('<td></td>').text(item.Comment || ''));
 
-                tableBody.append(row);
-            });
+            tableBody.append(row);
         });
     }
+
+    // チェックボックスイベント
+    $('#unify-duplicates').change(function() {
+        unifyDuplicates = $(this).is(':checked');
+        console.log('Unify duplicates:', unifyDuplicates);
+        renderTable();
+    });
+
+    // Levelソートイベント
+    $('#bms-table th.sortable').click(function() {
+        sortDirection = sortDirection === 'desc' ? 'asc' : 'desc';
+        console.log('Sorting Level:', sortDirection);
+        renderTable();
+    });
 });
 
 // テーブルスタイル
