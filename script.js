@@ -23,6 +23,11 @@ $(document).ready(function() {
         return level; // 非数値の場合そのまま
     }
 
+    // 文字列を正規化（空白トリム、改行削除）
+    function normalizeString(str) {
+        return str.trim().replace(/\n/g, '');
+    }
+
     // Titleの括弧内（[]と()）を無視したベース名を取得
     function getBaseTitle(title) {
         return title.replace(/\[.*?\]|\(.*?\)/g, '').trim();
@@ -34,11 +39,11 @@ $(document).ready(function() {
 
     // ExternalTitlesデータを取得
     $.getJSON(getTitlesUrl, function(titles) {
-        externalTitles = titles || [];
-        console.log('External titles:', externalTitles);
+        externalTitles = (titles || []).map(normalizeString);
+        console.log('External titles loaded:', externalTitles);
         loadTableData();
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error('Failed to fetch external titles:', textStatus, errorThrown);
+        console.error('Failed to fetch external titles:', textStatus, errorThrown, jqXHR.responseText);
         externalTitles = [];
         loadTableData();
     });
@@ -46,11 +51,11 @@ $(document).ready(function() {
     // テーブルデータをロード
     function loadTableData() {
         $.getJSON(spreadsheetUrl, function(data) {
-            console.log('Table data:', data);
+            console.log('Table data loaded:', data);
             tableData = data;
             renderTable();
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('Failed to fetch table data:', textStatus, errorThrown);
+            console.error('Failed to fetch table data:', textStatus, errorThrown, jqXHR.responseText);
             $('#table-body').html('<tr><td colspan="9">データの取得に失敗しました</td></tr>');
         });
     }
@@ -106,7 +111,10 @@ $(document).ready(function() {
 
         // テーブル行を生成
         displayData.forEach(item => {
-            const isExternal = externalTitles.includes(item.Title);
+            const normalizedTitle = normalizeString(item.Title);
+            const isExternal = externalTitles.includes(normalizedTitle);
+            console.log('Checking title:', normalizedTitle, 'isExternal:', isExternal);
+
             const row = $('<tr></tr>');
 
             // Level（SUを付加）
@@ -177,6 +185,9 @@ $(document).ready(function() {
     });
     $('th').css({
         'background-color': '#4CAF50',
+        'color': 'white'
+    });
+});
         'color': 'white'
     });
 });
