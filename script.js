@@ -1,31 +1,32 @@
 // SUGARJOY BMS Difficulty Table
 $(document).ready(function() {
-    // 外部タイトル（ExternalTitles）を格納
     let externalTitles = [];
 
-    // getTitlesJsonのURL（デプロイ後に実際のURLに置き換え）
-    // 例: https://script.google.com/macros/s/xxx/exec
-    const getTitlesUrl = 'https://script.google.com/macros/s/AKfycbzUn2xsbgmMKgmGdVAfMJpJIfPcpUc1YayoulspBj1J9cc0SH75EOCTo0DLZMyfgOY2/exec'; // TODO: 実際のURLに置き換え
+    // getTitlesJsonのURL
+    const getTitlesUrl = 'https://script.google.com/macros/s/AKfycbyzaHHi9CRsJDSpIhUOLRxOp6HbR4ADruSt_wM5j_VJZVQ0btKU1zlDVXCwazVdKLQ/exec';
+
+    // spreadsheet_url（doGet）
+    const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec';
 
     // ExternalTitlesデータを取得
     $.getJSON(getTitlesUrl, function(titles) {
         externalTitles = titles || [];
         console.log('External titles:', externalTitles);
-        loadTableData(); // テーブルデータをロード
+        loadTableData();
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error('Failed to fetch external titles:', textStatus, errorThrown);
         externalTitles = [];
-        loadTableData(); // エラー時もテーブルをロード
+        loadTableData();
     });
 
     // テーブルデータをロード
     function loadTableData() {
-        $.getJSON('/api/data', function(data) {
+        $.getJSON(spreadsheetUrl, function(data) {
             console.log('Table data:', data);
             renderTable(data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error('Failed to fetch table data:', textStatus, errorThrown);
-            $('#table-body').html('<tr><td colspan="6">データの取得に失敗しました</td></tr>');
+            $('#table-body').html('<tr><td colspan="9">データの取得に失敗しました</td></tr>');
         });
     }
 
@@ -53,23 +54,40 @@ $(document).ready(function() {
             items.forEach(item => {
                 const isExternal = externalTitles.includes(item.Title);
                 const row = $('<tr></tr>');
-                
+
+                // Level
+                row.append($('<td></td>').text(item.Level || ''));
+
                 // Title（外部タイトルなら青）
-                const titleCell = $('<td></td>').text(item.Title);
+                const titleCell = $('<td></td>').text(item.Title || '');
                 if (isExternal) {
                     titleCell.css('color', '#0000FF');
                 }
                 row.append(titleCell);
 
-                // 他の列
+                // Artist
                 row.append($('<td></td>').text(item.Artist || ''));
-                row.append($('<td></td>').text(item.Level || ''));
-                row.append($('<td></td>').text(item.Group || ''));
 
-                // 糞譜面度（数値のまま）
-                row.append($('<td></td>').text(item.Kusomen || ''));
+                // NOTES
+                row.append($('<td></td>').text(item.NOTES || ''));
 
-                // コメント
+                // T/N
+                row.append($('<td></td>').text(item['T/N'] || ''));
+
+                // BPM
+                row.append($('<td></td>').text(item.BPM || ''));
+
+                // DL（リンク）
+                const dlCell = $('<td></td>');
+                if (item.DL) {
+                    dlCell.append($('<a></a>').attr('href', item.DL).text('Download').attr('target', '_blank'));
+                }
+                row.append(dlCell);
+
+                // 糞譜面度（数値）
+                row.append($('<td></td>').text(item['糞譜面度'] || ''));
+
+                // Comment
                 row.append($('<td></td>').text(item.Comment || ''));
 
                 tableBody.append(row);
