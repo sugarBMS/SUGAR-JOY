@@ -20,12 +20,12 @@ $(document).ready(function() {
         if (typeof level === 'number' || !isNaN(parseInt(level))) {
             return `SU${level}`;
         }
-        return level; // すでにSU-3などの場合はそのまま
+        return level; // 非数値の場合そのまま
     }
 
-    // Titleの括弧内を無視したベース名を取得
+    // Titleの括弧内（[]と()）を無視したベース名を取得
     function getBaseTitle(title) {
-        return title.replace(/\[.*?\]/g, '').trim();
+        return title.replace(/\[.*?\]|\(.*?\)/g, '').trim();
     }
 
     // URLs
