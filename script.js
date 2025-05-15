@@ -15,6 +15,11 @@ $(document).ready(function() {
         levelPriority[`SU${i}`] = 3 + i;
     }
 
+    // Titleの括弧内を無視したベース名を取得
+    function getBaseTitle(title) {
+        return title.replace(/\[.*?\]/g, '').trim();
+    }
+
     // URLs
     const getTitlesUrl = 'https://script.google.com/macros/s/AKfycbyzaHHi9CRsJDSpIhUOLRxOp6HbR4ADruSt_wM5j_VJZVQ0btKU1zlDVXCwazVdKLQ/exec';
     const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec';
@@ -54,18 +59,20 @@ $(document).ready(function() {
             const groupedData = {};
             tableData.forEach(item => {
                 if (item.Group && item.Group !== 'SU99') {
-                    if (!groupedData[item.Title]) {
-                        groupedData[item.Title] = [];
+                    const baseTitle = getBaseTitle(item.Title);
+                    if (!groupedData[baseTitle]) {
+                        groupedData[baseTitle] = [];
                     }
-                    groupedData[item.Title].push(item);
+                    groupedData[baseTitle].push(item);
                 } else if (!item.Group || item.Group === '') {
-                    groupedData[item.Title] = [item];
+                    const baseTitle = getBaseTitle(item.Title);
+                    groupedData[baseTitle] = [item];
                 }
             });
 
             displayData = [];
-            Object.keys(groupedData).forEach(title => {
-                const items = groupedData[title];
+            Object.keys(groupedData).forEach(baseTitle => {
+                const items = groupedData[baseTitle];
                 if (items.length === 1) {
                     displayData.push(items[0]);
                 } else {
