@@ -5,7 +5,7 @@ $(document).ready(function() {
 
     // getTitlesJsonのURL（デプロイ後に実際のURLに置き換え）
     // 例: https://script.google.com/macros/s/xxx/exec
-    const getTitlesUrl = 'https://script.google.com/macros/s/xxx/exec'; // TODO: 実際のURLに置き換え
+    const getTitlesUrl = 'https://script.google.com/macros/s/AKfycbzUn2xsbgmMKgmGdVAfMJpJIfPcpUc1YayoulspBj1J9cc0SH75EOCTo0DLZMyfgOY2/exec'; // TODO: 実際のURLに置き換え
 
     // ExternalTitlesデータを取得
     $.getJSON(getTitlesUrl, function(titles) {
