@@ -31,6 +31,15 @@
             background-color: #4CAF50;
             color: white;
         }
+        th.sortable {
+            cursor: pointer;
+            position: relative;
+        }
+        th.sortable::after {
+            content: '↕';
+            position: absolute;
+            right: 8px;
+        }
         a {
             color: #0066cc;
             text-decoration: none;
@@ -38,14 +47,21 @@
         a:hover {
             text-decoration: underline;
         }
+        #controls {
+            margin: 10px auto;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h1>SUGARJOY BMS難易度表</h1>
+    <div id="controls">
+        <label><input type="checkbox" id="unify-duplicates"> 重複楽曲を統一</label>
+    </div>
     <table id="bms-table">
         <thead>
             <tr>
-                <th>Level</th>
+                <th class="sortable">Level</th>
                 <th>Title</th>
                 <th>Artist</th>
                 <th>NOTES</th>
