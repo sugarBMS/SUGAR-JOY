@@ -2,16 +2,18 @@
 $(document).ready(function() {
     let externalTitles = [];
     let tableData = [];
-    let sortDirection = 'desc'; // 初期：降順（SU0→SU-3）
+    let sortDirection = 'desc'; // 初期：降順（SU99→SU-3）
     let unifyDuplicates = false; // 初期：重複統一オフ
 
     // Levelの優先順位
-    const levelPriority = {
-        'SU0': 3,
-        'SU-1': 2,
-        'SU-2': 1,
-        'SU-3': 0
-    };
+    const levelPriority = {};
+    levelPriority['SU-3'] = 0;
+    levelPriority['SU-2'] = 1;
+    levelPriority['SU-1'] = 2;
+    levelPriority['SU0'] = 3;
+    for (let i = 1; i <= 99; i++) {
+        levelPriority[`SU${i}`] = 3 + i;
+    }
 
     // URLs
     const getTitlesUrl = 'https://script.google.com/macros/s/AKfycbyzaHHi9CRsJDSpIhUOLRxOp6HbR4ADruSt_wM5j_VJZVQ0btKU1zlDVXCwazVdKLQ/exec';
@@ -67,12 +69,14 @@ $(document).ready(function() {
                 if (items.length === 1) {
                     displayData.push(items[0]);
                 } else {
-                    // 最高Levelを選択
-                    const highestItem = items.reduce((max, item) => {
+                    // 最高Levelを選択（SU99除外）
+                    const filteredItems = items.filter(item => item.Level !== 'SU99');
+                    if (filteredItems.length === 0) return; // SU99のみの場合スキップ
+                    const highestItem = filteredItems.reduce((max, item) => {
                         const currentPriority = levelPriority[item.Level] || -1;
                         const maxPriority = levelPriority[max.Level] || -1;
                         return currentPriority > maxPriority ? item : max;
-                    }, items[0]);
+                    }, filteredItems[0]);
                     displayData.push(highestItem);
                 }
             });
