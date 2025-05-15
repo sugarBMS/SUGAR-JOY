@@ -35,8 +35,8 @@ $(document).ready(function() {
     }
 
     // URLs（デプロイ後に更新）
-    const spreadsheetUrl = 'https://script.google.com/macros/s/[Sheet1デプロイID]/exec';
-    const getExternalTitlesUrl = 'https://script.google.com/macros/s/[ExternalTitlesデプロイID]/exec';
+    const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbwdp3s0KqXpSuXlmmEACvYYLwusoGcB4u0AFV8VhQWz8jEeIFbuo83itubepYlG5qyr/exec';
+    const getExternalTitlesUrl = 'https://script.google.com/macros/s/AKfycbwieOCUBBfpXW6sH04sMawbF_3lDX-VbBumQ42vRv-meIuiRHDEJTL5CCsTfH1cn4Uo/exec';
     const headerUrl = './header.json'; // GitHubリポジトリのルート
 
     // データ取得（Sheet1、ExternalTitles、header.jsonを並列）
