@@ -1,62 +1,97 @@
-// （省略：Levelソート、mergeDuplicates）
-let externalTitles = [];
-let allData = [];
-let table;
+// SUGARJOY BMS Difficulty Table
+$(document).ready(function() {
+    // 外部タイトル（ExternalTitles）を格納
+    let externalTitles = [];
 
-function getTitleColor(title) {
-  const normalizedTitle = (title || '').trim().toLowerCase();
-  const isMatch = externalTitles.some(t => t.trim().toLowerCase() === normalizedTitle);
-  console.log('Checking title:', normalizedTitle, 'Match:', isMatch); // デバッグ
-  return isMatch ? '#0000FF' : '#000000';
-}
+    // getTitlesJsonのURL（デプロイ後に実際のURLに置き換え）
+    // 例: https://script.google.com/macros/s/xxx/exec
+    const getTitlesUrl = 'https://script.google.com/macros/s/xxx/exec'; // TODO: 実際のURLに置き換え
 
-$.getJSON('header.json', function(header) {
-  document.title = header.title;
-  $('h1').text(header.title);
-  $('p.description').html(header.description.replace(/\n/g, '<br>'));
-
-  $.getJSON('https://script.google.com/macros/s/xxx/exec', function(titles) {
-    externalTitles = titles || [];
-    console.log('External titles:', externalTitles); // デバッグ
-    $.getJSON(header.spreadsheet_url, function(data) {
-      allData = data;
-      table = $('#bmsTable').DataTable({
-        data: allData,
-        columns: header.columns.map(col => ({
-          title: col.name,
-          data: col.key,
-          render: col.key === 'Level' ? function(data) {
-            return 'SU' + (data || '');
-          } : col.key === 'Title' ? function(data) {
-            return `<span style="color: ${getTitleColor(data)}">${data || ''}</span>`;
-          } : col.render === 'link' ? function(data) {
-            return data ? `<a href="${data}" target="_blank">DL</a>` : '';
-          } : null,
-          type: col.key === 'Level' ? 'level' : null,
-          visible: col.visible !== false
-        })),
-        language: { url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/ja.json' },
-        paging: false,
-        order: [[0, 'asc']],
-        searching: true,
-        deferRender: true
-      });
-
-      $('#mergeDuplicates').on('change', function() {
-        const isMerged = $(this).is(':checked');
-        table.clear();
-        table.rows.add(isMerged ? mergeDuplicates(allData) : allData);
-        table.draw();
-      });
+    // ExternalTitlesデータを取得
+    $.getJSON(getTitlesUrl, function(titles) {
+        externalTitles = titles || [];
+        console.log('External titles:', externalTitles);
+        loadTableData(); // テーブルデータをロード
     }).fail(function(jqXHR, textStatus, errorThrown) {
-      console.error('スプレッドシートデータ取得エラー:', textStatus, errorThrown);
-      alert('スプレッドシートのデータ取得に失敗しました。');
+        console.error('Failed to fetch external titles:', textStatus, errorThrown);
+        externalTitles = [];
+        loadTableData(); // エラー時もテーブルをロード
     });
-  }).fail(function(jqXHR, textStatus, errorThrown) {
-    console.error('外部タイトル取得エラー:', textStatus, errorThrown);
-    alert('外部サイトのデータ取得に失敗しました。');
-  });
-}).fail(function(jqXHR, textStatus, errorThrown) {
-  console.error('header.json取得エラー:', textStatus, errorThrown);
-  alert('header.jsonの読み込みに失敗しました。');
+
+    // テーブルデータをロード
+    function loadTableData() {
+        $.getJSON('/api/data', function(data) {
+            console.log('Table data:', data);
+            renderTable(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to fetch table data:', textStatus, errorThrown);
+            $('#table-body').html('<tr><td colspan="6">データの取得に失敗しました</td></tr>');
+        });
+    }
+
+    // テーブルを描画
+    function renderTable(data) {
+        const tableBody = $('#table-body');
+        tableBody.empty();
+
+        // Group統合（SU99除外）
+        const groupedData = {};
+        data.forEach(item => {
+            if (item.Group && item.Group !== 'SU99') {
+                if (!groupedData[item.Group]) {
+                    groupedData[item.Group] = [];
+                }
+                groupedData[item.Group].push(item);
+            } else if (!item.Group || item.Group === '') {
+                groupedData[item.Title] = [item];
+            }
+        });
+
+        // テーブル行を生成
+        Object.keys(groupedData).sort().forEach(group => {
+            const items = groupedData[group];
+            items.forEach(item => {
+                const isExternal = externalTitles.includes(item.Title);
+                const row = $('<tr></tr>');
+                
+                // Title（外部タイトルなら青）
+                const titleCell = $('<td></td>').text(item.Title);
+                if (isExternal) {
+                    titleCell.css('color', '#0000FF');
+                }
+                row.append(titleCell);
+
+                // 他の列
+                row.append($('<td></td>').text(item.Artist || ''));
+                row.append($('<td></td>').text(item.Level || ''));
+                row.append($('<td></td>').text(item.Group || ''));
+
+                // 糞譜面度（数値のまま）
+                row.append($('<td></td>').text(item.Kusomen || ''));
+
+                // コメント
+                row.append($('<td></td>').text(item.Comment || ''));
+
+                tableBody.append(row);
+            });
+        });
+    }
+});
+
+// テーブルスタイル
+$(document).ready(function() {
+    $('table').css({
+        'background-color': '#f5f5f5',
+        'border-collapse': 'collapse',
+        'width': '100%'
+    });
+    $('th, td').css({
+        'border': '1px solid #ddd',
+        'padding': '8px',
+        'text-align': 'left'
+    });
+    $('th').css({
+        'background-color': '#4CAF50',
+        'color': 'white'
+    });
 });
