@@ -38,7 +38,10 @@
         th.sortable::after {
             content: '↕';
             position: absolute;
-            right: 8px;
+            right: 4px;
+        }
+        th:first-child {
+            min-width: 100px; /* Level列の幅を確保 */
         }
         a {
             color: #0066cc;
