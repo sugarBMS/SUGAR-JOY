@@ -5,14 +5,22 @@ $(document).ready(function() {
     let sortDirection = 'desc'; // 初期：降順（SU99→SU-3）
     let unifyDuplicates = false; // 初期：重複統一オフ
 
-    // Levelの優先順位
+    // Levelの優先順位（数値キー）
     const levelPriority = {};
-    levelPriority['SU-3'] = 0;
-    levelPriority['SU-2'] = 1;
-    levelPriority['SU-1'] = 2;
-    levelPriority['SU0'] = 3;
+    levelPriority['-3'] = 0;
+    levelPriority['-2'] = 1;
+    levelPriority['-1'] = 2;
+    levelPriority['0'] = 3;
     for (let i = 1; i <= 99; i++) {
-        levelPriority[`SU${i}`] = 3 + i;
+        levelPriority[i.toString()] = 3 + i;
+    }
+
+    // LevelをSU形式にフォーマット
+    function formatLevel(level) {
+        if (typeof level === 'number' || !isNaN(parseInt(level))) {
+            return `SU${level}`;
+        }
+        return level; // すでにSU-3などの場合はそのまま
     }
 
     // Titleの括弧内を無視したベース名を取得
@@ -77,7 +85,7 @@ $(document).ready(function() {
                     displayData.push(items[0]);
                 } else {
                     // 最高Levelを選択（SU99除外）
-                    const filteredItems = items.filter(item => item.Level !== 'SU99');
+                    const filteredItems = items.filter(item => formatLevel(item.Level) !== 'SU99');
                     if (filteredItems.length === 0) return; // SU99のみの場合スキップ
                     const highestItem = filteredItems.reduce((max, item) => {
                         const currentPriority = levelPriority[item.Level] || -1;
@@ -101,8 +109,8 @@ $(document).ready(function() {
             const isExternal = externalTitles.includes(item.Title);
             const row = $('<tr></tr>');
 
-            // Level
-            row.append($('<td></td>').text(item.Level || ''));
+            // Level（SUを付加）
+            row.append($('<td></td>').text(formatLevel(item.Level) || ''));
 
             // Title（外部タイトルなら青）
             const titleCell = $('<td></td>').text(item.Title || '');
