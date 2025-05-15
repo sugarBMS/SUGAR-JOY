@@ -5,9 +5,9 @@ let table;
 
 function getTitleColor(title) {
   const normalizedTitle = (title || '').trim().toLowerCase();
-  return externalTitles.some(t => t.trim().toLowerCase() === normalizedTitle)
-    ? '#0000FF'
-    : '#000000';
+  const isMatch = externalTitles.some(t => t.trim().toLowerCase() === normalizedTitle);
+  console.log('Checking title:', normalizedTitle, 'Match:', isMatch); // デバッグ
+  return isMatch ? '#0000FF' : '#000000';
 }
 
 $.getJSON('header.json', function(header) {
@@ -17,6 +17,7 @@ $.getJSON('header.json', function(header) {
 
   $.getJSON('https://script.google.com/macros/s/xxx/exec', function(titles) {
     externalTitles = titles || [];
+    console.log('External titles:', externalTitles); // デバッグ
     $.getJSON(header.spreadsheet_url, function(data) {
       allData = data;
       table = $('#bmsTable').DataTable({
