@@ -50,14 +50,6 @@ $(document).ready(function() {
         console.log('Sheet1 data loaded:', tableData);
         console.log('External titles loaded:', externalTitles);
         
-        // header.jsonのdescriptionを表示
-        if (headerData && headerData.description) {
-            $('#description').text(headerData.description);
-        } else {
-            $('#description').text('Description not available');
-            console.warn('header.json missing or no description:', headerData);
-        }
-        
         renderTable();
     }).catch(error => {
         console.error('Failed to fetch data:', error);
