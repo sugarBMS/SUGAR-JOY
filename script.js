@@ -120,7 +120,7 @@ $(document).ready(function() {
             // Title（外部タイトルなら青）
             const titleCell = $('<td></td>').text(item.Title || '');
             if (isExternal) {
-                titleCell.css('color', '#FFCCCC');
+                titleCell.css('color', '#FF0000');
             }
             row.append(titleCell);
 
