@@ -66,38 +66,37 @@ $(document).ready(function() {
 
         // 重複楽曲の統一（チェックボックスがオンの場合）
         if (unifyDuplicates) {
-            const groupedData = {};
-            tableData.forEach(item => {
-                if (item.Group && item.Group !== 'SU99') {
-                    const baseTitle = getBaseTitle(item.Title);
-                    if (!groupedData[baseTitle]) {
-                        groupedData[baseTitle] = [];
-                    }
-                    groupedData[baseTitle].push(item);
-                } else if (!item.Group || item.Group === '') {
-                    const baseTitle = getBaseTitle(item.Title);
-                    groupedData[baseTitle] = [item];
+        const groupedData = {};
+        tableData.forEach(item => {
+            if (item.Group && item.Group !== 'SU99') {
+                const groupKey = item.Group.toLowerCase(); // 大文字小文字を統一
+                if (!groupedData[groupKey]) {
+                    groupedData[groupKey] = [];
                 }
-            });
-
-            displayData = [];
-            Object.keys(groupedData).forEach(baseTitle => {
-                const items = groupedData[baseTitle];
-                if (items.length === 1) {
-                    displayData.push(items[0]);
-                } else {
-                    // 最高Levelを選択（SU99除外）
-                    const filteredItems = items.filter(item => formatLevel(item.Level) !== 'SU99');
-                    if (filteredItems.length === 0) return; // SU99のみの場合スキップ
-                    const highestItem = filteredItems.reduce((max, item) => {
+                groupedData[groupKey].push(item);
+            } else {
+                const baseTitle = getBaseTitle(item.Title);
+                groupedData[baseTitle] = [item];
+            }
+        });
+    
+        displayData = [];
+        Object.keys(groupedData).forEach(groupKey => {
+            const items = groupedData[groupKey];
+            if (items.length === 1) {
+                displayData.push(items[0]);
+            } else {
+                const filteredItems = items.filter(item => formatLevel(item.Level) !== 'SU99');
+                    if (filteredItems.length === 0) return;
+                        const highestItem = filteredItems.reduce((max, item) => {
                         const currentPriority = levelPriority[item.Level] || -1;
                         const maxPriority = levelPriority[max.Level] || -1;
                         return currentPriority > maxPriority ? item : max;
-                    }, filteredItems[0]);
-                    displayData.push(highestItem);
-                }
-            });
-        }
+                }, filteredItems[0]);
+                displayData.push(highestItem);
+            }
+        });
+    }
 
         // Levelでソート
         displayData.sort((a, b) => {
