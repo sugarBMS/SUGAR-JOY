@@ -118,9 +118,10 @@ $(document).ready(function() {
             row.append($('<td></td>').text(formatLevel(item.Level)));
 
             // Title（外部タイトルなら青）
+            // Title（外部タイトルなら行全体を青）
             const titleCell = $('<td></td>').text(item.Title || '');
             if (isExternal) {
-                titleCell.css('color', '#0000FF');
+                titleCell.closest('tr').css('background-color', '#e0f7fa'); // 薄い青
             }
             row.append(titleCell);
 
