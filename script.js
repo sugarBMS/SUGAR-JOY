@@ -117,27 +117,12 @@ $(document).ready(function() {
             // Level（SUを付加）
             row.append($('<td></td>').text(formatLevel(item.Level)));
             
-            //追加
-            const $tbody = $('#bms-table tbody').empty(); // テーブルボディをクリア
-            displayData.forEach(item => {
-            const isExternal = item.isExternal || false; // 外部タイトルフラグ
-            const $row = $('<tr></tr>'); // 新しい行
-            // Titleセル
+            // Title（外部タイトルなら青）
             const titleCell = $('<td></td>').text(item.Title || '');
-            // 他のセル（例：Level）
-            const levelCell = $('<td></td>').text(formatLevel(item.Level));
-            // 行にセルを追加
-            $row.append(titleCell, levelCell /* 他のセル */);
-            // 外部タイトルなら行全体の背景色を青
             if (isExternal) {
-                $row.css('background-color', '#e0f7fa'); // 薄い青
+                titleCell.css('color', '#0000FF');
             }
-            //追加終わり
-        $tbody.append($row);
     });
-
-
-            
             row.append(titleCell);
 
             // Artist
