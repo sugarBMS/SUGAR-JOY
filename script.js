@@ -185,6 +185,6 @@ $(document).ready(function() {
     });
     $('#description').css({
         'margin': '10px 0',
-        'font-style': 'italic'
+        'font-style': 'normal'
     });
 });
