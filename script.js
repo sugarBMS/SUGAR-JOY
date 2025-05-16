@@ -172,7 +172,7 @@ $(document).ready(function() {
 // テーブルスタイル
 $(document).ready(function() {
     $('table').css({
-        'width': '100%'
+        'background-color': '#f5f5f5',
         'border-collapse': 'collapse',
         'width': '100%'
     });
