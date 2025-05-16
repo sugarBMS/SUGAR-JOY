@@ -35,7 +35,7 @@ $(document).ready(function() {
     }
 
     // URLs（デプロイ後に更新）
-    const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbyfJ7FVp501BDd072GPCK7a7sux0tFV4U1prJaIpUjfGs775Mct9t5aF14nI6diGe_9/exec';
+    const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbxiLEqewhU_hycgJIZvhGnbhgsSnUfSrCrC0-6PUUcJ_rtK5hzBGlXAFhlxhRyJKOdn/exec';
     const getExternalTitlesUrl = 'https://script.google.com/macros/s/AKfycbwieOCUBBfpXW6sH04sMawbF_3lDX-VbBumQ42vRv-meIuiRHDEJTL5CCsTfH1cn4Uo/exec';
     const headerUrl = './header.json'; // GitHubリポジトリのルート
 
