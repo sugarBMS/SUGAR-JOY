@@ -7,12 +7,12 @@ $(document).ready(function() {
 
     // Levelの優先順位（数値キー）
     const levelPriority = {};
-    levelPriority['-3'] = 0;
-    levelPriority['-2'] = 1;
-    levelPriority['-1'] = 2;
-    levelPriority['0'] = 3;
+    levelPriority['-3'] = 103;
+    levelPriority['-2'] = 102;
+    levelPriority['-1'] = 101;
+    levelPriority['0'] = 100;
     for (let i = 1; i <= 99; i++) {
-        levelPriority[i.toString()] = 3 + i;
+        levelPriority[i.toString()] = 103 - i;
     }
 
     // LevelをSU形式にフォーマット
