@@ -116,12 +116,28 @@ $(document).ready(function() {
 
             // Level（SUを付加）
             row.append($('<td></td>').text(formatLevel(item.Level)));
-
-            // Title（外部タイトルなら青）
+            
+            //追加
+            const $tbody = $('#bms-table tbody').empty(); // テーブルボディをクリア
+            displayData.forEach(item => {
+            const isExternal = item.isExternal || false; // 外部タイトルフラグ
+            const $row = $('<tr></tr>'); // 新しい行
+            // Titleセル
             const titleCell = $('<td></td>').text(item.Title || '');
+            // 他のセル（例：Level）
+            const levelCell = $('<td></td>').text(formatLevel(item.Level));
+            // 行にセルを追加
+            $row.append(titleCell, levelCell /* 他のセル */);
+            // 外部タイトルなら行全体の背景色を青
             if (isExternal) {
-                titleCell.css('color', '#FFCCCC');
+                $row.css('background-color', '#e0f7fa'); // 薄い青
             }
+            //追加終わり
+        $tbody.append($row);
+    });
+
+
+            
             row.append(titleCell);
 
             // Artist
@@ -171,11 +187,7 @@ $(document).ready(function() {
 // テーブルスタイル
 $(document).ready(function() {
     $('table').css({
-        if (isExternal) {
-            titleCell.closest('tr').css('background-color', '#e0f7fa'); // 薄い青
-        }else{
-            titleCell.closest('tr').css('background-color', 'f5f5f5');
-        }   
+        'width': '100%'
         'border-collapse': 'collapse',
         'width': '100%'
     });
