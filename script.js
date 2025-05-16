@@ -116,13 +116,12 @@ $(document).ready(function() {
 
             // Level（SUを付加）
             row.append($('<td></td>').text(formatLevel(item.Level)));
-            
+
             // Title（外部タイトルなら青）
             const titleCell = $('<td></td>').text(item.Title || '');
             if (isExternal) {
                 titleCell.css('color', '#0000FF');
             }
-    });
             row.append(titleCell);
 
             // Artist
