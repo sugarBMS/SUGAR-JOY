@@ -118,10 +118,9 @@ $(document).ready(function() {
             row.append($('<td></td>').text(formatLevel(item.Level)));
 
             // Title（外部タイトルなら青）
-            // Title（外部タイトルなら行全体を青）
             const titleCell = $('<td></td>').text(item.Title || '');
             if (isExternal) {
-                titleCell.closest('tr').css('background-color', '#e0f7fa'); // 薄い青
+                titleCell.css('color', '#FFCCCC');
             }
             row.append(titleCell);
 
@@ -172,7 +171,11 @@ $(document).ready(function() {
 // テーブルスタイル
 $(document).ready(function() {
     $('table').css({
-        'background-color': '#f5f5f5',
+        if (isExternal) {
+            titleCell.closest('tr').css('background-color', '#e0f7fa'); // 薄い青
+        }else{
+            titleCell.closest('tr').css('background-color', 'f5f5f5');
+        }   
         'border-collapse': 'collapse',
         'width': '100%'
     });
