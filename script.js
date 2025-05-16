@@ -12,7 +12,7 @@ $(document).ready(function() {
     levelPriority['-1'] = 101;
     levelPriority['0'] = 100;
     for (let i = 1; i <= 99; i++) {
-        levelPriority[i.toString()] = 103 - i;
+        levelPriority[i.toString()] = 100 - i;
     }
 
     // LevelをSU形式にフォーマット
