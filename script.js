@@ -15,12 +15,6 @@ $(document).ready(function() {
         levelPriority[i.toString()] = 100 - i;
     }
 
-    // formatLevelの前にログ
-    console.log('displayData Levels:', displayData.map(item => ({
-        Level: item.Level,
-        Type: typeof item.Level
-    })));
-
     // LevelをSU形式にフォーマット
     function formatLevel(level) {
         if (level === 0 || level === '0') return 'SU0'; // 0を明示的に処理
