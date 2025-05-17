@@ -1,102 +1,104 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+    <title>ここに難易度表の名前</title>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUGARJOY 難易度表</title>
-    <meta name="bmstable" content="/header.json">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #ffffff;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        table {
-            margin: 0 auto;
-            background-color: #f5f5f5;
-            border-collapse: collapse;
-            width: 90%;
-            max-width: 1200px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        th.sortable {
-            cursor: pointer;
-            position: relative;
-        }
-        th.sortable::after {
-            content: '↕';
-            position: absolute;
-            right: 4px;
-        }
-        th:first-child {
-            min-width: 100px; /* Level列の幅を確保 */
-        }
-        a {
-            color: #0066cc;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        #controls {
-            margin: 10px auto;
-            text-align: center;
-        }
-        .checkbox-container {
-            text-align: center;
-        }
-        #description {
-            text-align: center;
-        }
-    </style>
+    <meta name="bmstable" content="header.json" />
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
+    </script>
 </head>
+
 <body>
-     <h1>SUGARJOY BMS難易度表</h1>
-     <div id="description">
-        <script>
-            const data = {
-            description: "SU-3=sl0~4  SU-2=sl5~8  SU-1=sl9~12  SU0からはst0基準  SU99は評価不能糞譜面\n0.18を下回る低TOTAL or obj名がない場合は初期の譜面でズレチェック行ってない可能性大\n糞譜面度0=stella譜面  1=発狂bms  2=ソロモンや第二発狂  3=引退"
-            };
-            document.getElementById('description').innerHTML = data.description.replace(/\n/g, '<br>');
+    <header class="mb-3">
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">ここに難易度表の名前</span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <div class="alert alert-success mb-3" role="alert">
+            <p>ここに難易度表の説明文。次期難易度表フォーマット対応。</p>
+            <p>難易度表の読み込みと表示に数秒かかります。</p>
+            <hr>
+            <p class="mb-0">説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文</p>
+        </div>
+
+
+        <!--ここから難易度表本体-->
+        <div>
+            <table class="table table-light table-striped table-hover" id="table_int">
+            </table>
+        </div>
+        <script language="javascript" type="text/javascript">
+            $(document).ready(function () {
+                $.getJSON($("meta[name=bmstable]").attr("content"), function (header) {
+                    $.getJSON(header.data_url, function (information) {
+                        makeBMSTable(information, header.symbol);
+                    });
+                });
+            });
+
+            function makeBMSTable(info, mark) {
+                var x = "";
+                var ev = "";
+                var count = 0;
+                var obj = $("#table_int");
+
+                obj.html("");
+                $("<thead class='table-dark'><tr><th>Level</th><th>Title</th><th>Artist</th><th>Comment</th></tr></thead><tbody>")
+                    .appendTo(obj);
+                var obj_sep = null;
+                for (var i = 0; i < info.length; i++) {
+                    if (x != info[i].level) {
+                        if (obj_sep != null) {
+                            obj_sep.html("<td colspan='4'>" + "<b>" + mark + x + " (" + count +
+                                "譜面)</b></td>");
+                        }
+                        obj_sep = $("<tr class='table-dark' style='text-align:center' id='" + mark + info[i].level +
+                            "'></tr>");
+                        obj_sep.appendTo(obj);
+                        count = 0;
+                        x = info[i].level;
+                    }
+
+                    var str = $("<tr></tr>");
+
+                    // Level
+                    $("<td width='5%'>" + mark + x + "</td>").appendTo(str);
+
+                    // Title
+                    $("<td width='45%'>" +
+                        "<a href='http://www.dream-pro.info/~lavalse/LR2IR/search.cgi?mode=ranking&bmsmd5=" + info[
+                            i]
+                        .md5 + "' target='_blank'>" + info[i].title + "</a></td>").appendTo(str);
+
+                    // Artist
+                    $("<td width='40%'>" + info[i].artist + "</td>").appendTo(str);
+
+                    // Comment
+                    $("<td width='10%'>" + info[i].comment + "</td>").appendTo(str);
+                    str.appendTo(obj);
+                    count++;
+
+                }
+                $("</tbody>").appendTo(obj);
+
+                if (obj_sep != null) {
+                    obj_sep.html("<td class='table-dark' style='text-align:center' colspan='4'>" + "<b>" + mark + x +
+                        " (" + count + "譜面)</b></td>");
+                }
+            }
         </script>
     </div>
-    <div class="checkbox-container">
-        <label><input type="checkbox" id="unify-duplicates"> 重複楽曲を統一</label>
-    </div>
-    <table id="bms-table">
-        <thead>
-            <tr>
-                <th class="sortable">Level</th>
-                <th>Title</th>
-                <th>Artist</th>
-                <th>NOTES</th>
-                <th>T/N</th>
-                <th>BPM</th>
-                <th>DL</th>
-                <th>糞譜面度</th>
-                <th>Comment</th>
-            </tr>
-        </thead>
-        <tbody id="table-body">
-            <!-- テーブルデータはscript.jsで動的に生成 -->
-        </tbody>
-    </table>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- script.js -->
-    <script src="script.js"></script>
-</body>
 </html>
