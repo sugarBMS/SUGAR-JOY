@@ -48,56 +48,59 @@
                 });
             });
 
-            function makeBMSTable(info, mark) {
-                var x = "";
-                var ev = "";
-                var count = 0;
-                var obj = $("#table_int");
-
-                obj.html("");
-                $("<thead class='table-dark'><tr><th>Level</th><th>Title</th><th>Artist</th><th>Comment</th></tr></thead><tbody>")
-                    .appendTo(obj);
-                var obj_sep = null;
-                for (var i = 0; i < info.length; i++) {
-                    if (x != info[i].level) {
-                        if (obj_sep != null) {
-                            obj_sep.html("<td colspan='4'>" + "<b>" + mark + x + " (" + count +
-                                "譜面)</b></td>");
-                        }
-                        obj_sep = $("<tr class='table-dark' style='text-align:center' id='" + mark + info[i].level +
-                            "'></tr>");
-                        obj_sep.appendTo(obj);
-                        count = 0;
-                        x = info[i].level;
+        function makeBMSTable(info, mark) {
+            var x = "";
+            var ev = "";
+            var count = 0;
+            var obj = $("#table_int");
+        
+            obj.html("");
+            $("<thead class='table-dark'><tr><th>Level</th><th>Title</th><th>Artist</th><th>T/N</th><th>BPM</th><th>Comment</th></tr></thead><tbody>")
+                .appendTo(obj);
+            var obj_sep = null;
+            for (var i = 0; i < info.length; i++) {
+                if (x != info[i].level) {
+                    if (obj_sep != null) {
+                        obj_sep.html("<td colspan='6'>" + "<b>" + mark + x + " (" + count +
+                            "譜面)</b></td>");
                     }
-
-                    var str = $("<tr></tr>");
-
-                    // Level
-                    $("<td width='5%'>" + mark + x + "</td>").appendTo(str);
-
-                    // Title
-                    $("<td width='45%'>" +
-                        "<a href='http://www.dream-pro.info/~lavalse/LR2IR/search.cgi?mode=ranking&bmsmd5=" + info[
-                            i]
-                        .md5 + "' target='_blank'>" + info[i].title + "</a></td>").appendTo(str);
-
-                    // Artist
-                    $("<td width='40%'>" + info[i].artist + "</td>").appendTo(str);
-
-                    // Comment
-                    $("<td width='10%'>" + info[i].comment + "</td>").appendTo(str);
-                    str.appendTo(obj);
-                    count++;
-
+                    obj_sep = $("<tr class='table-dark' style='text-align:center' id='" + mark + info[i].level +
+                        "'></tr>");
+                    obj_sep.appendTo(obj);
+                    count = 0;
+                    x = info[i].level;
                 }
-                $("</tbody>").appendTo(obj);
-
-                if (obj_sep != null) {
-                    obj_sep.html("<td class='table-dark' style='text-align:center' colspan='4'>" + "<b>" + mark + x +
-                        " (" + count + "譜面)</b></td>");
-                }
+        
+                var str = $("<tr></tr>");
+        
+                // Level
+                $("<td width='5%'>" + mark + x + "</td>").appendTo(str);
+        
+                // Title
+                $("<td width='30%'>" +
+                    "<a href='http://www.dream-pro.info/~lavalse/LR2IR/search.cgi?mode=ranking&bmsmd5=" + info[i].md5 + "' target='_blank'>" + info[i].title + "</a></td>").appendTo(str);
+        
+                // Artist
+                $("<td width='25%'>" + info[i].artist + "</td>").appendTo(str);
+        
+                // T/N
+                $("<td width='20%'>" + info[i].tn + "</td>").appendTo(str);
+        
+                // BPM
+                $("<td width='10%'>" + info[i].bpm + "</td>").appendTo(str);
+        
+                // Comment
+                $("<td width='10%'>" + info[i].comment + "</td>").appendTo(str);
+                str.appendTo(obj);
+                count++;
             }
+            $("</tbody>").appendTo(obj);
+        
+            if (obj_sep != null) {
+                obj_sep.html("<td class='table-dark' style='text-align:center' colspan='6'>" + "<b>" + mark + x +
+                    " (" + count + "譜面)</b></td>");
+            }
+        }
         </script>
     </div>
 
