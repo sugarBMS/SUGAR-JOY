@@ -1,18 +1,5 @@
 {
-  "title": "SUGARJOY 難易度表",
-  "description": "SU-3=sl0~4  SU-2=sl5~8  SU-1=sl9~12  SU0からはst0基準\n0.18を下回る低TOTAL or obj名がない場合は初期の譜面でズレチェック行ってない可能性大\n糞譜面度0=stella譜面  1=発狂bms  2=ソロモンや第二発狂  3=引退",
-  "spreadsheet_url": "https://script.google.com/macros/s/AKfycbx7LKbaeOoqtSEJOmHrzGj770vgjKlqCS-VMsmxeUw6W3jgom2ImamdGI_gDfyHxfbB/exec",
-  "external_titles_url": "https://script.google.com/macros/s/AKfycbyzaHHi9CRsJDSpIhUOLRxOp6HbR4ADruSt_wM5j_VJZVQ0btKU1zlDVXCwazVdKLQ/exec",
-  "columns": [
-    { "name": "Level", "key": "Level", "render": null },
-    { "name": "Title", "key": "Title", "render": null },
-    { "name": "Artist", "key": "Artist", "render": null },
-    { "name": "NOTES", "key": "NOTES", "render": null },
-    { "name": "T/N", "key": "T/N", "render": null },
-    { "name": "BPM", "key": "BPM", "render": null },
-    { "name": "DL", "key": "DL", "render": "link" },
-    { "name": "糞譜面度", "key": "糞譜面度", "render": null },
-    { "name": "Comment", "key": "Comment", "render": null },
-    { "name": "Group", "key": "Group", "render": null, "visible": false }
-  ]
+"name" : "SUGARJOY",
+"symbol" : "SU",
+"data_url" : "ここにJSONのURL"
 }
