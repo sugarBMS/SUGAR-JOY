@@ -33,13 +33,6 @@
             <p class="mb-0">説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文説明文</p>
         </div>
 
-        // テストデータ
-        const testData = [
-          { level: "1", title: "テスト曲1", artist: "テストアーティスト1", comment: "コメント1", md5: "xxx" },
-          { level: "2", title: "テスト曲2", artist: "テストアーティスト2", comment: "コメント2", md5: "yyy" }
-        ];
-
-
         <!--ここから難易度表本体-->
         <div>
             <table class="table table-light table-striped table-hover" id="table_int">
@@ -54,7 +47,14 @@
                 });
             });
 
-            function makeBMSTable(info, mark) {
+            // テストデータ
+             const testData = [
+                 { level: "1", title: "テスト曲1", artist: "テストアーティスト1", comment: "コメント1", md5: "xxx" },
+                 { level: "2", title: "テスト曲2", artist: "テストアーティスト2", comment: "コメント2", md5: "yyy" }
+             ];
+
+
+            function makeBMSTable(testData, mark) {
                 var x = "";
                 var ev = "";
                 var count = 0;
