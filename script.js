@@ -34,7 +34,7 @@ $(document).ready(function() {
         return title.replace(/\[.*?\]|\(.*?\)/g, '').trim();
     }
 
-    // URLs（デプロイ後に更新）
+    // URL（デプロイ後に更新）
     const spreadsheetUrl = 'https://script.google.com/macros/s/AKfycbxiLEqewhU_hycgJIZvhGnbhgsSnUfSrCrC0-6PUUcJ_rtK5hzBGlXAFhlxhRyJKOdn/exec';
     const getExternalTitlesUrl = 'https://script.google.com/macros/s/AKfycbwieOCUBBfpXW6sH04sMawbF_3lDX-VbBumQ42vRv-meIuiRHDEJTL5CCsTfH1cn4Uo/exec';
     const headerUrl = './header.json'; // GitHubリポジトリのルート
