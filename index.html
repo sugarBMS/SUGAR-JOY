@@ -34,10 +34,15 @@
             <hr>
             <p class="mb-0">改修中</p>
         </div>
-
-
+        
         <!--ここから難易度表本体-->
         <div>
+            <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="mergeDuplicates">
+            <label class="form-check-label" for="mergeDuplicates">
+            重複楽曲をまとめる
+            </label>
+        </div>
             <table class="table table-light table-striped table-hover" id="table_int">
             </table>
         </div>
@@ -50,66 +55,95 @@
                 });
             });
 
-        function makeBMSTable(info, mark) {
-            var x = "";
-            var ev = "";
-            var count = 0;
-            var obj = $("#table_int");
-        
-            obj.html("");
-            $("<thead class='table-dark'><tr><th>Level</th><th>Title</th><th>Artist</th><th>T/N</th><th>BPM</th><th>差分DL</th><th>糞譜面度</th><th>Comment</th></tr></thead><tbody>")
-                .appendTo(obj);
-            var obj_sep = null;
-            for (var i = 0; i < info.length; i++) {
-                if (x != info[i].level) {
-                    if (obj_sep != null) {
-                        obj_sep.html("<td colspan='8'>" + "<b>" + mark + x + " (" + count +
-                            "譜面)</b></td>");
-                    }
-                    obj_sep = $("<tr class='table-dark' style='text-align:center' id='" + mark + info[i].level +
-                        "'></tr>");
-                    obj_sep.appendTo(obj);
-                    count = 0;
-                    x = info[i].level;
-                }
-        
-                var str = $("<tr></tr>");
-        
-                // Level
-                $("<td width='5%'>" + mark + x + "</td>").appendTo(str);
-        
-                // Title
-                $("<td width='25%'>" +
-                    "<a href='http://www.dream-pro.info/~lavalse/LR2IR/search.cgi?mode=ranking&bmsmd5=" + info[i].md5 + "' target='_blank'>" + info[i].title + "</a></td>").appendTo(str);
-        
-                // Artist
-                $("<td width='15%'>" + info[i].artist + "</td>").appendTo(str);
-        
-                // T/N
-                $("<td width='10%'>" + info[i].tn + "</td>").appendTo(str);
-        
-                // BPM
-                $("<td width='10%'>" + info[i].bpm + "</td>").appendTo(str);
+function makeBMSTable(info, mark) {
+    var x = "";
+    var count = 0;
+    var obj = $("#table_int");
 
-                // 差分DL
-                $("<td width='10%'>" +
-                    "<a href='" + (info[i]["差分DL"] || "") + "' target='_blank'>DL</a></td>").appendTo(str);
+    // チェックボックスの状態
+    const mergeDuplicates = $("#mergeDuplicates").is(":checked");
 
-                // 糞譜面度
-                $("<td width='10%'>" + info[i].糞譜面度 + "</td>").appendTo(str);
-        
-                // Comment
-                $("<td width='20%'>" + info[i].comment + "</td>").appendTo(str);
-                str.appendTo(obj);
-                count++;
-            }
-            $("</tbody>").appendTo(obj);
-        
+    // 重複楽曲のグループ化
+    function getPrefix(title) {
+        const match = title.match(/^[^[\s]+/);
+        return match ? match[0] : title;
+    }
+
+    function groupDuplicates(data) {
+        const groups = {};
+        data.forEach(item => {
+            const prefix = getPrefix(item.title);
+            if (!groups[prefix]) groups[prefix] = [];
+            groups[prefix].push(item);
+        });
+        return groups;
+    }
+
+    // データ処理
+    const displayData = mergeDuplicates ? Object.values(groupDuplicates(info)) : info.map(item => [item]);
+
+    obj.html("");
+    $("<thead class='table-dark'><tr><th>Level</th><th>Title</th><th>Artist</th><th>T/N</th><th>BPM</th><th>差分DL</th><th>糞譜面度</th><th>Comment</th></tr></thead><tbody>")
+        .appendTo(obj);
+    var obj_sep = null;
+
+    displayData.forEach(group => {
+        const firstItem = group[0]; // 代表楽曲
+        if (x != firstItem.level) {
             if (obj_sep != null) {
-                obj_sep.html("<td class='table-dark' style='text-align:center' colspan='8'>" + "<b>" + mark + x +
-                    " (" + count + "譜面)</b></td>");
+                obj_sep.html("<td colspan='8'>" + "<b>" + mark + x + " (" + count + "譜面)</b></td>");
             }
+            obj_sep = $("<tr class='table-dark' style='text-align:center' id='" + mark + firstItem.level + "'></tr>");
+            obj_sep.appendTo(obj);
+            count = 0;
+            x = firstItem.level;
         }
+
+        var str = $("<tr></tr>");
+
+        // Level
+        $("<td width='5%'>" + mark + x + "</td>").appendTo(str);
+
+        // Title
+        let titleText = firstItem.title;
+        let titleHtml = "<a href='https://stellabms.xyz/upload/4428' target='_blank'>" + titleText + "</a>";
+        if (mergeDuplicates && group.length > 1) {
+            const tooltipContent = group.map(item => item.title).join("<br>");
+            titleHtml = "<a href='https://stellabms.xyz/upload/4428' target='_blank' data-bs-toggle='tooltip' data-bs-html='true' title='" + tooltipContent + "'>" + titleText + " (+" + (group.length - 1) + ")</a>";
+        }
+        $("<td width='20%'>" + titleHtml + "</td>").appendTo(str);
+
+        // Artist
+        $("<td width='20%'>" + firstItem.artist + "</td>").appendTo(str);
+
+        // T/N
+        $("<td width='15%'>" + firstItem.tn + "</td>").appendTo(str);
+
+        // BPM
+        $("<td width='10%'>" + firstItem.bpm + "</td>").appendTo(str);
+
+        // 差分DL
+        $("<td width='10%'>" +
+            "<a href='" + (firstItem["差分DL"] || "") + "' target='_blank'>DL</a></td>").appendTo(str);
+
+        // 糞譜面度
+        $("<td width='10%'>" + (firstItem["糞譜面度"] || "") + "</td>").appendTo(str);
+
+        // Comment
+        $("<td width='10%'>" + firstItem.comment + "</td>").appendTo(str);
+
+        str.appendTo(obj);
+        count++;
+    });
+
+    $("</tbody>").appendTo(obj);
+    if (obj_sep != null) {
+        obj_sep.html("<td class='table-dark' style='text-align:center' colspan='8'>" + "<b>" + mark + x + " (" + count + "譜面)</b></td>");
+    }
+
+    // ツールチップ初期化
+    $('[data-bs-toggle="tooltip"]').tooltip();
+}
         </script>
     </div>
 
