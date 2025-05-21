@@ -37,7 +37,7 @@
         <!-- チェックボックス -->
         <div class="mb-3">
             <input type="checkbox" id="groupByTitle" class="form-check-input">
-            <label for="groupByTitle" class="form-check-label">同じグループのタイトルを最高レベルで統一</label>
+            <label for="groupByTitle" class="form-check-label">重複楽曲で統一</label>
         </div>
 
         <!-- 難易度表本体 -->
@@ -71,20 +71,21 @@
                 var groupByTitle = $("#groupByTitle").is(":checked");
                 var data = info;
 
-                // チェックボックスがオンの場合、groupで集約
+                // チェックボックスがオンの場合、groupで集約（空文字は除外）
                 if (groupByTitle) {
                     var groupedData = {};
-                    // groupごとにデータを集約
+                    var nonGroupedData = [];
+                    // groupごとにデータを分離
                     for (var i = 0; i < info.length; i++) {
                         var group = info[i].group || "";
                         if (group === "") {
-                                nonGroupedData.push(info[i]); // 空文字は集約せず個別保存
+                            nonGroupedData.push(info[i]); // 空文字は集約せず個別保存
                         } else {
                             if (!groupedData[group]) {
                                 groupedData[group] = [];
                             }
-                        groupedData[group].push(info[i]);
-                        }    
+                            groupedData[group].push(info[i]);
+                        }
                     }
 
                     // 各グループで最高levelのデータを選ぶ
@@ -99,6 +100,9 @@
                         });
                         data.push(maxLevelItem);
                     }
+
+                    // 空文字グループのデータを追加
+                    data = data.concat(nonGroupedData);
 
                     // level順にソート（dustを最後）
                     data.sort(function (a, b) {
