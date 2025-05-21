@@ -25,7 +25,6 @@
     </header>
 
     <div class="container">
-
         <div class="alert alert-success mb-3" role="alert">
             <p>SU-3=sl0~4　SU-2=sl5~8  SU-1=sl9~12　SU0以降はst0基準</p>
             <p>T/N0.18を下回る低TOTALやobj名が未記載の差分は初期の譜面でズレチェック行ってない可能性大</p>
@@ -35,82 +34,125 @@
             <p class="mb-0">改修中</p>
         </div>
 
+        <!-- チェックボックス -->
+        <div class="mb-3">
+            <input type="checkbox" id="groupByTitle" class="form-check-input">
+            <label for="groupByTitle" class="form-check-label">同じグループのタイトルを最高レベルで統一</label>
+        </div>
 
-        <!--ここから難易度表本体-->
+        <!-- 難易度表本体 -->
         <div>
             <table class="table table-light table-striped table-hover" id="table_int">
             </table>
         </div>
+
         <script language="javascript" type="text/javascript">
             $(document).ready(function () {
                 $.getJSON($("meta[name=bmstable]").attr("content"), function (header) {
                     $.getJSON(header.data_url, function (information) {
                         makeBMSTable(information, header.symbol);
+                        $("#groupByTitle").change(function () {
+                            makeBMSTable(information, header.symbol);
+                        });
                     });
                 });
             });
 
-        function makeBMSTable(info, mark) {
-            var x = "";
-            var ev = "";
-            var count = 0;
-            var obj = $("#table_int");
+            function makeBMSTable(info, mark) {
+                var x = "";
+                var count = 0;
+                var obj = $("#table_int");
+                obj.html("");
+                $("<thead class='table-dark'><tr><th>Level</th><th>Title</th><th>Artist</th><th>T/N</th><th>BPM</th><th>差分DL</th><th>糞譜面度</th><th>Comment</th></tr></thead><tbody>")
+                    .appendTo(obj);
+                var obj_sep = null;
 
-            obj.html("");
-            $("<thead class='table-dark'><tr><th>Level</th><th>Title</th><th>Artist</th><th>T/N</th><th>BPM</th><th>差分DL</th><th>糞譜面度</th><th>Comment</th></tr></thead><tbody>")
-                .appendTo(obj);
-            var obj_sep = null;
-            for (var i = 0; i < info.length; i++) {
-                if (x != info[i].level) {
-                    if (obj_sep != null) {
-                        obj_sep.html("<td colspan='8'>" + "<b>" + mark + x + " (" + count +
-                            "譜面)</b></td>");
+                // チェックボックスの状態を確認
+                var groupByTitle = $("#groupByTitle").is(":checked");
+                var data = info;
+
+                // チェックボックスがオンの場合、groupで集約
+                if (groupByTitle) {
+                    var groupedData = {};
+                    // groupごとにデータを集約
+                    for (var i = 0; i < info.length; i++) {
+                        var group = info[i].group || "";
+                        if (!groupedData[group]) {
+                            groupedData[group] = [];
+                        }
+                        groupedData[group].push(info[i]);
                     }
-                    obj_sep = $("<tr class='table-dark' style='text-align:center' id='" + mark + info[i].level +
-                        "'></tr>");
-                    obj_sep.appendTo(obj);
-                    count = 0;
-                    x = info[i].level;
+
+                    // 各グループで最高levelのデータを選ぶ
+                    data = [];
+                    for (var group in groupedData) {
+                        var groupItems = groupedData[group];
+                        // levelを比較（dustを最高、-3を最低）
+                        var maxLevelItem = groupItems.reduce(function (a, b) {
+                            var levelA = a.level === "dust" ? Infinity : parseInt(a.level);
+                            var levelB = b.level === "dust" ? Infinity : parseInt(b.level);
+                            return levelA > levelB ? a : b;
+                        });
+                        data.push(maxLevelItem);
+                    }
+
+                    // level順にソート（dustを最後）
+                    data.sort(function (a, b) {
+                        var levelA = a.level === "dust" ? Infinity : parseInt(a.level);
+                        var levelB = b.level === "dust" ? Infinity : parseInt(b.level);
+                        return levelA - levelB;
+                    });
                 }
 
-                var str = $("<tr></tr>");
+                // テーブル生成
+                for (var i = 0; i < data.length; i++) {
+                    if (x != data[i].level) {
+                        if (obj_sep != null) {
+                            obj_sep.html("<td colspan='8'>" + "<b>" + mark + x + " (" + count + "譜面)</b></td>");
+                        }
+                        obj_sep = $("<tr class='table-dark' style='text-align:center' id='" + mark + data[i].level + "'></tr>");
+                        obj_sep.appendTo(obj);
+                        count = 0;
+                        x = data[i].level;
+                    }
 
-                // Level
-                $("<td width='5%'>" + mark + x + "</td>").appendTo(str);
+                    var str = $("<tr></tr>");
 
-                // Title
-                $("<td width='25%'>" +
-                    "<a href='http://www.dream-pro.info/~lavalse/LR2IR/search.cgi?mode=ranking&bmsmd5=" + info[i].md5 + "' target='_blank'>" + info[i].title + "</a></td>").appendTo(str);
+                    // Level
+                    $("<td width='5%'>" + mark + x + "</td>").appendTo(str);
 
-                // Artist
-                $("<td width='15%'>" + info[i].artist + "</td>").appendTo(str);
+                    // Title
+                    $("<td width='25%'>" +
+                        "<a href='http://www.dream-pro.info/~lavalse/LR2IR/search.cgi?mode=ranking&bmsmd5=" + data[i].md5 + "' target='_blank'>" + data[i].title + "</a></td>").appendTo(str);
 
-                // T/N
-                $("<td width='10%'>" + info[i].tn + "</td>").appendTo(str);
+                    // Artist
+                    $("<td width='15%'>" + data[i].artist + "</td>").appendTo(str);
 
-                // BPM
-                $("<td width='10%'>" + info[i].bpm + "</td>").appendTo(str);
+                    // T/N
+                    $("<td width='10%'>" + data[i].tn + "</td>").appendTo(str);
 
-                // 差分DL
-                $("<td width='10%'>" +
-                    "<a href='" + (info[i]["差分DL"] || "") + "' target='_blank'>DL</a></td>").appendTo(str);
+                    // BPM
+                    $("<td width='10%'>" + data[i].bpm + "</td>").appendTo(str);
 
-                // 糞譜面度
-                $("<td width='10%'>" + info[i].糞譜面度 + "</td>").appendTo(str);
+                    // 差分DL
+                    $("<td width='10%'>" +
+                        "<a href='" + (data[i]["差分DL"] || "") + "' target='_blank'>DL</a></td>").appendTo(str);
 
-                // Comment
-                $("<td width='20%'>" + info[i].comment + "</td>").appendTo(str);
-                str.appendTo(obj);
-                count++;
+                    // 糞譜面度
+                    $("<td width='10%'>" + data[i]["糞譜面度"] + "</td>").appendTo(str);
+
+                    // Comment
+                    $("<td width='20%'>" + data[i].comment + "</td>").appendTo(str);
+                    str.appendTo(obj);
+                    count++;
+                }
+                $("</tbody>").appendTo(obj);
+
+                if (obj_sep != null) {
+                    obj_sep.html("<td class='table-dark' style='text-align:center' colspan='8'>" + "<b>" + mark + x + " (" + count + "譜面)</b></td>");
+                }
             }
-            $("</tbody>").appendTo(obj);
-
-            if (obj_sep != null) {
-                obj_sep.html("<td class='table-dark' style='text-align:center' colspan='8'>" + "<b>" + mark + x +
-                    " (" + count + "譜面)</b></td>");
-            }
-        }
         </script>
     </div>
-
+</body>
 </html>
