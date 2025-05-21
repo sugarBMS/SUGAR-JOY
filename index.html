@@ -69,14 +69,24 @@ function makeBMSTable(info, mark) {
         return match ? match[0] : title;
     }
 
+    // グループ化
     function groupDuplicates(data) {
         const groups = {};
         data.forEach(item => {
-            const prefix = getPrefix(item.title);
-            if (!groups[prefix]) groups[prefix] = [];
-            groups[prefix].push(item);
+            const groupKey = item.group || item.title;
+            if (!groups[groupKey]) groups[groupKey] = [];
+            groups[groupKey].push(item);
         });
-        return groups;
+        return Object.values(groups).map(group => {
+            const validItems = group.filter(item => item.level !== "SUdust");
+            if (validItems.length === 0) return group;
+            const maxLevelItem = validItems.reduce((max, item) => {
+                const level = parseInt(item.level, 10) || 0;
+                const maxLevel = parseInt(max.level, 10) || 0;
+                return level > maxLevel ? item : max;
+            }, validItems[0]);
+            return [maxLevelItem, ...group.filter(item => item !== maxLevelItem)];
+        });
     }
 
     // データ処理
