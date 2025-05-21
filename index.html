@@ -77,10 +77,14 @@
                     // groupごとにデータを集約
                     for (var i = 0; i < info.length; i++) {
                         var group = info[i].group || "";
-                        if (!groupedData[group]) {
-                            groupedData[group] = [];
-                        }
+                        if (group === "") {
+                                nonGroupedData.push(info[i]); // 空文字は集約せず個別保存
+                        } else {
+                            if (!groupedData[group]) {
+                                groupedData[group] = [];
+                            }
                         groupedData[group].push(info[i]);
+                        }    
                     }
 
                     // 各グループで最高levelのデータを選ぶ
